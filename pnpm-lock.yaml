@@ -38,6 +38,9 @@ importers:
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.17.9)(typescript@5.7.2)
+      workbox-window:
+        specifier: ^7.3.0
+        version: 7.3.0
       zustand:
         specifier: ^5.0.2
         version: 5.0.2(@types/react@18.3.14)(react@18.3.1)

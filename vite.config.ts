@@ -10,7 +10,7 @@ const config: UserConfig = {
       prerender: true
     }),
     VitePWA({
-      injectRegister: 'script-defer',
+      injectRegister: 'auto',
       registerType: 'autoUpdate',
       manifest: {
         name: 'InCrop',
@@ -42,12 +42,7 @@ const config: UserConfig = {
         ]
       }
     })
-  ],
-  build: {
-    rollupOptions: {
-      external: ['workbox-window']
-    }
-  }
+  ]
 };
 
 export default config;
