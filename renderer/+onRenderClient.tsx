@@ -4,6 +4,7 @@ import Layout from './Layout';
 import ReactDOM from 'react-dom/client';
 import type { OnRenderClientAsync } from 'vike/types';
 import getPageTitle from './getPageTitle';
+import registerPwa from '../utils/registerPwa';
 
 let root: ReactDOM.Root;
 const onRenderClient: OnRenderClientAsync = async (pageContext): ReturnType<OnRenderClientAsync> => {
@@ -19,6 +20,7 @@ const onRenderClient: OnRenderClientAsync = async (pageContext): ReturnType<OnRe
   );
 
   if (!root) {
+    registerPwa();
     root = ReactDOM.createRoot(container);
   }
   root.render(page);
