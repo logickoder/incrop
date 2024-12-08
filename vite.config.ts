@@ -6,11 +6,8 @@ import { VitePWA } from 'vite-plugin-pwa';
 const config: UserConfig = {
   plugins: [
     react(),
-    vike({
-      // Use default settings:
-      prerender: true
-    }),
     VitePWA({
+      injectRegister: 'script-defer',
       registerType: 'autoUpdate',
       manifest: {
         name: 'InCrop',
@@ -41,6 +38,9 @@ const config: UserConfig = {
           }
         ]
       }
+    }),
+    vike({
+      prerender: true
     })
   ]
 };
