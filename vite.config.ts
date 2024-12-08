@@ -37,12 +37,20 @@ const config: UserConfig = {
             'purpose': 'maskable'
           }
         ]
+      },
+      devOptions: {
+        enabled: true
       }
     }),
     vike({
       prerender: true
     })
-  ]
+  ],
+  build: {
+    rollupOptions: {
+      external: ['workbox-window']
+    }
+  }
 };
 
 export default config;
