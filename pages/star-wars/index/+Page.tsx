@@ -1,9 +1,7 @@
-export default Page
+import { useData } from '../../../renderer/useData';
+import type { Data } from './+data';
 
-import { useData } from '../../../renderer/useData'
-import type { Data } from './+data'
-
-function Page() {
+export default function Page() {
   const { movies } = useData<Data>()
   return (
     <>

@@ -1,8 +1,6 @@
-import './code.css'
+import './code.css';
 
-export { Page }
-
-function Page() {
+export default function Page() {
   return (
     <>
       <h1>About</h1>

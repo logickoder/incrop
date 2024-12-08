@@ -1,14 +1,12 @@
-export { Layout }
+import Link from './Link';
+import React from 'react';
+import logoUrl from './logo.svg';
+import { PageContextProvider } from './usePageContext';
+import type { PageContext } from 'vike/types';
+import './css/index.css';
+import './Layout.css';
 
-import React from 'react'
-import logoUrl from './logo.svg'
-import { PageContextProvider } from './usePageContext'
-import { Link } from './Link'
-import type { PageContext } from 'vike/types'
-import './css/index.css'
-import './Layout.css'
-
-function Layout({ children, pageContext }: { children: React.ReactNode; pageContext: PageContext }) {
+export default function Layout({ children, pageContext }: { children: React.ReactNode; pageContext: PageContext }) {
   return (
     <React.StrictMode>
       <PageContextProvider pageContext={pageContext}>
@@ -23,7 +21,7 @@ function Layout({ children, pageContext }: { children: React.ReactNode; pageCont
         </Frame>
       </PageContextProvider>
     </React.StrictMode>
-  )
+  );
 }
 
 function Frame({ children }: { children: React.ReactNode }) {
@@ -37,7 +35,7 @@ function Frame({ children }: { children: React.ReactNode }) {
     >
       {children}
     </div>
-  )
+  );
 }
 
 function Sidebar({ children }: { children: React.ReactNode }) {
@@ -55,7 +53,7 @@ function Sidebar({ children }: { children: React.ReactNode }) {
     >
       {children}
     </div>
-  )
+  );
 }
 
 function Content({ children }: { children: React.ReactNode }) {
@@ -72,7 +70,7 @@ function Content({ children }: { children: React.ReactNode }) {
         {children}
       </div>
     </div>
-  )
+  );
 }
 
 function Logo() {
@@ -87,5 +85,5 @@ function Logo() {
         <img src={logoUrl} height={64} width={64} alt="logo" />
       </a>
     </div>
-  )
+  );
 }

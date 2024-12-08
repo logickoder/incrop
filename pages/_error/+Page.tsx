@@ -1,21 +1,21 @@
-export { Page }
+import { ReactNode } from 'react';
 
-import { usePageContext } from '../../renderer/usePageContext'
+import usePageContext from '../../renderer/usePageContext';
 
-function Page() {
-  const pageContext = usePageContext()
-  let { abortReason } = pageContext
+export default function Page() {
+  const pageContext = usePageContext();
+  let { abortReason } = pageContext;
   if (!abortReason) {
-    abortReason = pageContext.is404 ? 'Page not found.' : 'Something went wrong.'
+    abortReason = pageContext.is404 ? 'Page not found.' : 'Something went wrong.';
   }
   return (
     <Center>
       <p style={{ fontSize: '1.3em' }}>{abortReason}</p>
     </Center>
-  )
+  );
 }
 
-function Center({ children }: { children: React.ReactNode }) {
+function Center({ children }: { children: ReactNode }) {
   return (
     <div
       style={{
@@ -27,5 +27,5 @@ function Center({ children }: { children: React.ReactNode }) {
     >
       {children}
     </div>
-  )
+  );
 }

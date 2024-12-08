@@ -1,4 +1,4 @@
-import type { Config } from 'vike/types'
+import type { Config } from 'vike/types';
 
 // https://vike.dev/config
 export default {
@@ -13,6 +13,9 @@ export default {
     // Define new setting 'description'
     description: {
       env: { server: true }
+    },
+    Page: {
+      env: { server: false, client: true } // SPA for all pages
     }
   },
   hydrationCanBeAborted: true

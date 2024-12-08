@@ -1,7 +1,7 @@
 // https://vike.dev/useData
-export { useData }
+import usePageContext from './usePageContext';
 
-import { usePageContext } from './usePageContext'
+export { useData }
 
 /** https://vike.dev/useData */
 function useData<Data>() {
