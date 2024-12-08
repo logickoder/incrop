@@ -2,7 +2,6 @@
 
 import ReactDOMServer from 'react-dom/server';
 import { dangerouslySkipEscape, escapeInject } from 'vike/server';
-import logoUrl from './logo.svg';
 import type { OnRenderHtmlAsync } from 'vike/types';
 import Layout from './Layout';
 import getPageTitle from './getPageTitle';
@@ -28,9 +27,11 @@ const onRenderHtml: OnRenderHtmlAsync = async (pageContext): ReturnType<OnRender
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <link rel="icon" href="${logoUrl}" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="${desc}" />
+        <link rel="icon" href="/favicon.ico" sizes="48x48">
+        <link rel="icon" href="/logo.svg" sizes="any" type="image/svg+xml">
+        <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png">
         <title>${title}</title>
       </head>
       <body>
