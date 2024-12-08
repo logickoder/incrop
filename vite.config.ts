@@ -6,6 +6,9 @@ import { VitePWA } from 'vite-plugin-pwa';
 const config: UserConfig = {
   plugins: [
     react(),
+    vike({
+      prerender: true
+    }),
     VitePWA({
       injectRegister: 'script-defer',
       registerType: 'autoUpdate',
@@ -37,13 +40,7 @@ const config: UserConfig = {
             'purpose': 'maskable'
           }
         ]
-      },
-      devOptions: {
-        enabled: true
       }
-    }),
-    vike({
-      prerender: true
     })
   ],
   build: {
