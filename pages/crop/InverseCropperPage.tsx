@@ -217,7 +217,7 @@ export default function InverseCropper(
           ref={imageRef}
           src={imageSrc}
           alt="Crop Preview"
-          className="w-full h-auto object-contain"
+          className="w-full h-auto max-h-full object-contain"
           style={{
             transform: `scale(${zoomLevel})`,
             transformOrigin: 'center center'
