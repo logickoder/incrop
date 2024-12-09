@@ -9,14 +9,26 @@ import {
 } from 'react';
 import { Clipboard, FileImage, ImagePlus, LucideProps, Upload } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { navigate } from 'vike/client/router';
 
 export default function ImageUploadPage() {
   const [selectedImage, setSelectedImage] = useState<{
     file: File;
-    preview: string | undefined;
+    preview: string;
   }>();
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const goToCropper = async () => {
+    await navigate(
+      '/crop',
+      {
+        pageContext: {
+          args: selectedImage?.preview
+        }
+      }
+    );
+  };
 
   const handleFileSelect: ChangeEventHandler<HTMLInputElement> = (event) => {
     processImage(event?.target?.files?.[0]);
@@ -124,11 +136,10 @@ export default function ImageUploadPage() {
               alt="Uploaded preview"
               className="max-h-[400px] rounded-lg mb-4 shadow-lg"
             />
-            <div className="flex space-x-4">
+            <div className="flex flex-col sm:flex-row space-x-4">
               <button
                 className="btn btn-primary"
-                onClick={() => {/* Navigate to crop page */
-                }}
+                onClick={goToCropper}
               >
                 Start Inverse Cropping
               </button>

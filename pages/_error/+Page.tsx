@@ -1,6 +1,5 @@
-import { ReactNode } from 'react';
-
 import usePageContext from '../../renderer/usePageContext';
+import InfoPage from '../_shared/InfoPage';
 
 export default function Page() {
   const pageContext = usePageContext();
@@ -9,23 +8,6 @@ export default function Page() {
     abortReason = pageContext.is404 ? 'Page not found.' : 'Something went wrong.';
   }
   return (
-    <Center>
-      <p style={{ fontSize: '1.3em' }}>{abortReason}</p>
-    </Center>
-  );
-}
-
-function Center({ children }: { children: ReactNode }) {
-  return (
-    <div
-      style={{
-        height: 'calc(100vh - 100px)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}
-    >
-      {children}
-    </div>
+    <InfoPage message={abortReason} />
   );
 }

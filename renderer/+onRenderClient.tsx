@@ -20,7 +20,7 @@ const onRenderClient: OnRenderClientAsync = async (pageContext): ReturnType<OnRe
   );
 
   if (!root) {
-    registerPwa();
+    await registerPwa();
     root = ReactDOM.createRoot(container);
   }
   root.render(page);
