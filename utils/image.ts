@@ -44,3 +44,14 @@ export function getAverageRGB(element: HTMLImageElement) {
 export function getGrayscale(rgb: { r: number, g: number, b: number }) {
   return 0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b;
 }
+
+export function getContainedSize(element: HTMLImageElement) {
+  const ratio = element.naturalWidth / element.naturalHeight;
+  let width = element.height * ratio;
+  let height = element.height;
+  if (width > element.width) {
+    width = element.width;
+    height = element.width / ratio;
+  }
+  return { width, height };
+}

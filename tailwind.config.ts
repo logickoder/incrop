@@ -97,6 +97,7 @@ export default {
           'base-100': '#ffffff',
           'base-200': '#f5f5f5',
           'base-300': '#e6e6e6',
+          'base-400': '#d2d2d2',
           'base-content': '#0a0a0a'
         },
         dark: {
@@ -115,6 +116,7 @@ export default {
           'base-100': '#0a0a0a',
           'base-200': '#1f1f1f',
           'base-300': '#333333',
+          'base-400': '#545454',
           'base-content': '#ffffff'
         }
       }
