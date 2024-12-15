@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import { CropMode } from './types';
+import { getSafely } from '../../utils/object';
 
 interface InverseCropperProps {
   imageSrc: string;
@@ -38,14 +39,16 @@ export default function InverseCropper(
 
       // Inverse crop logic
       const inverseCropData = {
-        x: cropBoxData.left - canvasData.left,
-        y: cropBoxData.top - canvasData.top,
-        width: cropBoxData.width,
-        height: cropBoxData.height,
-        rotate: imageData.rotate,
-        scaleX: imageData.scaleX,
-        scaleY: imageData.scaleY
+        cropInfo: {
+          x: cropBoxData.left - canvasData.left,
+          y: cropBoxData.top - canvasData.top,
+          width: cropBoxData.width,
+          height: cropBoxData.height
+        },
+        imageInfo: imageData
       };
+
+      console.log(inverseCropData);
 
       onCrop(inverseCropData);
     }
@@ -55,17 +58,10 @@ export default function InverseCropper(
     if (!cropper) {
       return;
     }
-  }, [cropper]);
-
-  useEffect(() => {
-    if (!cropper) {
-      return;
-    }
 
     const isHorizontal = cropMode === CropMode.horizontal;
     const canvasData = cropper.getCanvasData();
     const cropBoxSize = isHorizontal ? canvasData.height * 0.2 : canvasData.width * 0.2;
-    // console.log(cropper);
     // Adjust the crop box
     cropper.setCropBoxData({
       left: isHorizontal ? 0 : cropper.getCanvasData().width / 2 - cropBoxSize / 2,
@@ -75,8 +71,7 @@ export default function InverseCropper(
     });
     // Disable some cropper points based on the crop mode
     Object.keys(points).forEach((point) => {
-      // @ts-expect-error - retrieve the cropper point element
-      const element = cropper.cropBox.querySelector(`.cropper-point.point-${point}`);
+      const element = getSafely(cropper, 'cropBox')?.querySelector(`.cropper-point.point-${point}`);
       // @ts-expect-error - check if the point should be enabled
       const enabled = points[point] === cropMode;
       if (element) {
@@ -85,31 +80,34 @@ export default function InverseCropper(
     });
   }, [cropper, cropMode, points]);
 
+  useEffect(() => {
+    if (!cropper) {
+      return;
+    }
+
+    // make the drag box transparent instead of the half-black color
+    const dragBox = getSafely(cropper, 'dragBox') as HTMLDivElement;
+    if (dragBox) {
+      dragBox.style.backgroundColor = 'inherit';
+      dragBox.style.opacity = 'inherit';
+    }
+
+    // Then make the face black with 0.3 opacity, since that is what we want to crop out
+    const face = getSafely(cropper, 'face') as HTMLDivElement;
+    if (face) {
+      face.style.backgroundColor = 'black';
+      face.style.opacity = '0.3';
+    }
+  }, [cropper]);
+
   return (
     <div className="inverse-cropper-container space-y-4">
-      <div className="crop-mode-controls flex justify-between items-center">
-        <div className="mode-toggle flex gap-2">
-          <button
-            onClick={() => setCropMode(CropMode.horizontal)}
-            className={`btn btn-sm ${cropMode === CropMode.horizontal ? 'btn-primary' : 'btn-ghost'}`}
-          >
-            Horizontal Crop
-          </button>
-          <button
-            onClick={() => setCropMode(CropMode.vertical)}
-            className={`btn btn-sm ${cropMode === CropMode.vertical ? 'btn-primary' : 'btn-ghost'}`}
-          >
-            Vertical Crop
-          </button>
-        </div>
-      </div>
-
       <div className="cropper-wrapper relative">
         <Cropper
           ref={cropperRef}
           src={imageSrc}
           style={{
-            height: '100%',
+            height: '70vh',
             width: '100%'
           }}
           crop={handleCrop}
@@ -128,40 +126,31 @@ export default function InverseCropper(
             }
           }}
           rotatable={false}
-          onInitialized={(instance) => {
-            setCropper(instance);
-
-            // console.log(instance, instance.canvas, instance.cropBox);
-            // console.log(instance, Object.keys(instance));
-            // Custom styling for inverse crop
-            // const cropperCanvas = instance.cropper.querySelector('.cropper-canvas');
-            // const cropperCropBox = instance.cropper.querySelector('.cropper-crop-box');
-            //
-            // if (cropperCanvas && cropperCropBox) {
-            //   cropperCanvas.style.opacity = '0.3';
-            //   cropperCropBox.style.backgroundColor = 'transparent';
-            //   cropperCropBox.style.border = '2px solid white';
-            // }
-          }}
+          onInitialized={setCropper}
         />
       </div>
 
       <div className="crop-actions flex justify-between items-center">
-        <div className="zoom-controls flex gap-2">
-          <button
-            onClick={() => cropper?.zoom(0.1)}
-            className="btn btn-square btn-sm"
-          >
-            +
-          </button>
-          <button
-            onClick={() => cropper?.zoom(-0.1)}
-            className="btn btn-square btn-sm"
-          >
-            -
-          </button>
+        <div className="dropdown">
+          <div className="flex flex-rown gap-2 m-1 items-center">
+            <p>Crop Mode</p>
+            <button tabIndex={0} role="button" className="btn capitalize">{cropMode}</button>
+          </div>
+          <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+            {
+              Object.values(CropMode).map((mode) => (
+                <li key={mode}>
+                  <button
+                    onClick={() => setCropMode(mode)}
+                    className={`btn btn-block capitalize ${cropMode === mode ? 'btn-primary' : 'btn-ghost'}`}
+                  >
+                    {mode}
+                  </button>
+                </li>
+              ))
+            }
+          </ul>
         </div>
-
         <button
           onClick={handleCrop}
           className="btn btn-primary"

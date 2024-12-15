@@ -6,8 +6,8 @@ export type CropRegion = {
 }
 
 export enum CropMode {
-  horizontal,
-  vertical
+  horizontal = 'horizontal',
+  vertical = 'vertical'
 }
 
 export enum ZoomDirection {
