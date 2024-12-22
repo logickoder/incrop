@@ -8,12 +8,10 @@ center of your photos and bring edges together for a unique, standout effect. Cr
 - **Inverse Cropping**: Remove center sections while maintaining image integrity
 - **Dual Modes**: Choose between horizontal or vertical inverse cropping
 - **Precision Control**: Pixel-perfect selection with real-time preview
--
-
-[//]: # (- **Smart Processing**: Advanced edge blending for seamless results)
-
 - **Multiple Formats**: Support for PNG, JPEG, and WebP
 - **User-Friendly**: Intuitive interface with drag-and-drop support
+
+[//]: # (- **Smart Processing**: Advanced edge blending for seamless results)
 
 ## 🚀 Getting Started
 
@@ -53,6 +51,7 @@ pnpm dev
 - Tailwind CSS
 - DaisyUI
 - Canvas API
+- Cropper.js
 
 ## 📖 Usage
 
