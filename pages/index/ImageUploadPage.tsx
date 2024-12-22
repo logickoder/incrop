@@ -10,12 +10,10 @@ import {
 import { Clipboard, FileImage, ImagePlus, LucideProps, Upload } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { navigate } from 'vike/client/router';
+import { CropImage } from './types';
 
 export default function ImageUploadPage() {
-  const [selectedImage, setSelectedImage] = useState<{
-    file: File;
-    preview: string;
-  }>();
+  const [selectedImage, setSelectedImage] = useState<CropImage>();
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -24,7 +22,7 @@ export default function ImageUploadPage() {
       '/crop',
       {
         pageContext: {
-          args: selectedImage?.preview
+          args: selectedImage
         }
       }
     );
@@ -141,7 +139,7 @@ export default function ImageUploadPage() {
                 className="btn btn-primary"
                 onClick={goToCropper}
               >
-                Start Inverse Cropping
+                Get Cropping
               </button>
               <button
                 className="btn btn-ghost"

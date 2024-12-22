@@ -3,6 +3,5 @@ import usePageContext from '../../renderer/usePageContext';
 
 export default function Page() {
   const pageContext = usePageContext();
-  return <InverseCropperPage imageSrc={pageContext.args} onCrop={() => {
-  }} />;
+  return <InverseCropperPage {...pageContext.args} />;
 }

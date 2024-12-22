@@ -5,7 +5,6 @@ import ReactDOM from 'react-dom/client';
 import type { OnRenderClientAsync } from 'vike/types';
 import getPageTitle from './getPageTitle';
 import registerPwa from '../utils/registerPwa';
-import registerDropdownListener from '../utils/registerDropdownListener';
 
 let root: ReactDOM.Root;
 const onRenderClient: OnRenderClientAsync = async (pageContext): ReturnType<OnRenderClientAsync> => {
@@ -22,7 +21,6 @@ const onRenderClient: OnRenderClientAsync = async (pageContext): ReturnType<OnRe
 
   if (!root) {
     await registerPwa();
-    registerDropdownListener();
     root = ReactDOM.createRoot(container);
   }
   root.render(page);

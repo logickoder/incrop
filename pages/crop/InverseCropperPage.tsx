@@ -1,21 +1,26 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import { CropMode } from './types';
-import { getSafely } from '../../utils/object';
-
-interface InverseCropperProps {
-  imageSrc: string;
-}
+import useWindowSize from '../../utils/useWindowSize';
+import { toast } from 'react-toastify';
+import { CropImage } from '../index/types';
+import { getSafely, setStyle } from '../../utils';
 
 export default function InverseCropper(
   {
-    imageSrc
-  }: InverseCropperProps
+    file,
+    preview
+  }: CropImage
 ) {
-  const [cropMode, setCropMode] = useState(CropMode.horizontal);
-  const [cropper, setCropper] = useState<Cropper | null>(null);
+  const [state, setState] = useState({
+    key: 0,
+    cropMode: CropMode.horizontal,
+    cropper: null as Cropper | null,
+    loading: false
+  });
   const cropperRef = useRef<(HTMLImageElement | ReactCropperElement)>(null);
+  const [width, height] = useWindowSize();
 
   const points = useMemo(() => ({
     'n': CropMode.horizontal,
@@ -28,80 +33,101 @@ export default function InverseCropper(
     'sw': undefined
   }), []);
 
-  const handleCrop = () => {
+  const handleCrop = useCallback(() => {
+    const cropper = state.cropper;
     if (!cropper) {
       return;
     }
 
-    const isHorizontal = cropMode === CropMode.horizontal;
+    try {
+      setState((prev) => ({ ...prev, loading: true }));
 
-    // Get the crop box data
-    const cropBoxData = cropper.getCropBoxData();
-    const canvasData = cropper.getCanvasData();
-    const imageData = cropper.getImageData();
+      const isHorizontal = state.cropMode === CropMode.horizontal;
 
-    // scale the crop box data to the original image size
-    const widthRatio = imageData.naturalWidth / imageData.width;
-    const heightRatio = imageData.naturalHeight / imageData.height;
-    const cropInfo = {
-      x: (cropBoxData.left - canvasData.left) * widthRatio,
-      y: (cropBoxData.top - canvasData.top) * heightRatio,
-      width: cropBoxData.width * widthRatio,
-      height: cropBoxData.height * heightRatio
-    };
+      // Get the crop box data
+      const cropBoxData = cropper.getCropBoxData();
+      const canvasData = cropper.getCanvasData();
+      const imageData = cropper.getImageData();
 
-    // Create a canvas
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d')!;
+      // scale the crop box data to the original image size
+      const widthRatio = imageData.naturalWidth / imageData.width;
+      const heightRatio = imageData.naturalHeight / imageData.height;
+      const cropInfo = {
+        x: (cropBoxData.left - canvasData.left) * widthRatio,
+        y: (cropBoxData.top - canvasData.top) * heightRatio,
+        width: cropBoxData.width * widthRatio,
+        height: cropBoxData.height * heightRatio
+      };
 
-    // @ts-expect-error image exists on the cropper
-    const image = cropper.image;
+      // Create a canvas
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
 
-    // Set the canvas size to the image size - cropped size
-    canvas.width = isHorizontal ? imageData.naturalWidth : imageData.naturalWidth - cropInfo.width;
-    canvas.height = isHorizontal ? imageData.naturalHeight - cropInfo.height : imageData.naturalHeight;
+      const image = getSafely(cropper, 'image') as HTMLImageElement | undefined;
+      if (!image) {
+        return;
+      }
 
-    // Draw the first part of the cropped image
-    const width = isHorizontal ? imageData.naturalWidth : cropInfo.x;
-    const height = isHorizontal ? cropInfo.y : imageData.naturalHeight;
-    ctx.drawImage(
-      image,
-      0,  // Source x
-      0,  // Source y
-      width,   // Source width
-      height,  // Source height
-      0,  // Destination x
-      0,  // Destination y
-      width,   // Destination width
-      height   // Destination height
-    );
+      // Set the canvas size to the image size - cropped size
+      canvas.width = isHorizontal ? imageData.naturalWidth : imageData.naturalWidth - cropInfo.width;
+      canvas.height = isHorizontal ? imageData.naturalHeight - cropInfo.height : imageData.naturalHeight;
 
-    // Draw the second part of the cropped image
-    const sourceX = isHorizontal ? 0 : cropInfo.x + cropInfo.width;
-    const sourceY = isHorizontal ? cropInfo.y + cropInfo.height : 0;
-    ctx.drawImage(
-      image,
-      sourceX,  // Source x
-      sourceY,  // Source y
-      isHorizontal ? imageData.naturalWidth : imageData.naturalWidth - sourceX,   // Source width
-      isHorizontal ? imageData.naturalHeight - sourceY : imageData.naturalHeight,  // Source height
-      isHorizontal ? 0 : cropInfo.x,  // Destination x
-      isHorizontal ? cropInfo.y : 0, // Destination y
-      isHorizontal ? canvas.width : canvas.width - cropInfo.x,     // Destination width
-      isHorizontal ? canvas.height - cropInfo.y : canvas.height   // Destination height
-    );
+      // Draw the first part of the cropped image
+      const width = isHorizontal ? imageData.naturalWidth : cropInfo.x;
+      const height = isHorizontal ? cropInfo.y : imageData.naturalHeight;
+      ctx.drawImage(
+        image,
+        0,  // Source x
+        0,  // Source y
+        width,   // Source width
+        height,  // Source height
+        0,  // Destination x
+        0,  // Destination y
+        width,   // Destination width
+        height   // Destination height
+      );
 
-    // Get the cropped image as a Data URL
-    const croppedImage = canvas.toDataURL('image/png');
+      // Draw the second part of the cropped image
+      const sourceX = isHorizontal ? 0 : cropInfo.x + cropInfo.width;
+      const sourceY = isHorizontal ? cropInfo.y + cropInfo.height : 0;
+      ctx.drawImage(
+        image,
+        sourceX,  // Source x
+        sourceY,  // Source y
+        isHorizontal ? imageData.naturalWidth : imageData.naturalWidth - sourceX,   // Source width
+        isHorizontal ? imageData.naturalHeight - sourceY : imageData.naturalHeight,  // Source height
+        isHorizontal ? 0 : cropInfo.x,  // Destination x
+        isHorizontal ? cropInfo.y : 0, // Destination y
+        isHorizontal ? canvas.width : canvas.width - cropInfo.x,     // Destination width
+        isHorizontal ? canvas.height - cropInfo.y : canvas.height   // Destination height
+      );
 
-    // Create a link and trigger download
-    const link = document.createElement('a');
-    link.href = croppedImage;
-    link.download = 'incrop.png';
-    link.click();
-  };
+      // Get the cropped image as a Data URL
+      const croppedImage = canvas.toDataURL(file.type);
 
+      // Create a link and trigger download
+      const link = document.createElement('a');
+      link.href = croppedImage;
+      link.download = `incrop-${file.name}`;
+      link.click();
+    } catch (error) {
+      console.error('Failed to crop image', error);
+      toast('An error occurred when cropping your image', { type: 'error' });
+    } finally {
+      setState((prev) => ({ ...prev, loading: false }));
+    }
+  }, [state.cropper, state.cropMode, file]);
+
+  // force a re-render to reset the cropper instance
   useEffect(() => {
+    setState((prev) => ({ ...prev, cropper: null, key: prev.key + 1 }));
+  }, [width, height, preview, state.cropMode]);
+
+  // Set the crop box data based on the crop mode
+  useEffect(() => {
+    const cropper = state.cropper;
+    const cropMode = state.cropMode;
+
     if (!cropper) {
       return;
     }
@@ -125,46 +151,40 @@ export default function InverseCropper(
     });
     // Disable some cropper points based on the crop mode
     Object.keys(points).forEach((point) => {
-      const element = getSafely(cropper, 'cropBox')?.querySelector(`.cropper-point.point-${point}`);
-      // @ts-expect-error - check if the point should be enabled
-      const enabled = points[point] === cropMode;
-      if (element) {
-        element.style.display = enabled ? 'block' : 'none';
-      }
+      setStyle(
+        getSafely(cropper, 'cropBox')?.querySelector(`.cropper-point.point-${point}`),
+        // @ts-expect-error - check if the point should be enabled
+        { display: points[point] === cropMode ? 'block' : 'none' }
+      );
     });
-  }, [cropper, cropMode, points]);
+  }, [state.cropper, state.cropMode, points]);
 
+  // Change the drag box and face background color and opacity
+  // Make the drag box transparent and the face black with 0.3 opacity (since that is what we want to crop out)
   useEffect(() => {
+    const cropper = state.cropper;
     if (!cropper) {
       return;
     }
 
     // make the drag box transparent instead of the half-black color
-    const dragBox = getSafely(cropper, 'dragBox') as HTMLDivElement;
-    if (dragBox) {
-      dragBox.style.backgroundColor = 'inherit';
-      dragBox.style.opacity = 'inherit';
-    }
+    setStyle(getSafely(cropper, 'dragBox'), { backgroundColor: 'inherit', opacity: 'inherit' });
 
     // Then make the face black with 0.3 opacity, since that is what we want to crop out
-    const face = getSafely(cropper, 'face') as HTMLDivElement;
-    if (face) {
-      face.style.backgroundColor = 'black';
-      face.style.opacity = '0.3';
-    }
-  }, [cropper]);
+    setStyle(getSafely(cropper, 'face'), { backgroundColor: 'black', opacity: '0.3' });
+  }, [state.cropper]);
 
   return (
     <div className="inverse-cropper-container space-y-4">
       <div className="cropper-wrapper relative">
         <Cropper
+          key={state.key}
           ref={cropperRef}
-          src={imageSrc}
+          src={preview}
           style={{
             height: '70vh',
             width: '100%'
           }}
-          crop={handleCrop}
           viewMode={1}
           dragMode="none"
           cropBoxResizable={true}
@@ -174,43 +194,43 @@ export default function InverseCropper(
           scalable={false}
           movable={false}
           cropmove={(event) => {
-            console.log(event.detail.action, cropMode, points[event.detail.action]);
             // @ts-expect-error - disable cropper move if not the right mode
-            if (event.detail.action !== 'all' && cropMode !== points[event.detail.action]) {
+            if (event.detail.action !== 'all' && state.cropMode !== points[event.detail.action]) {
               event.preventDefault();
             }
           }}
           rotatable={false}
-          onInitialized={setCropper}
+          onInitialized={(cropper) => setState((prev) => ({ ...prev, cropper }))}
         />
       </div>
 
       <div className="crop-actions flex justify-between items-center">
-        <div className="dropdown">
-          <div className="flex flex-rown gap-2 m-1 items-center">
-            <p>Crop Mode</p>
-            <button tabIndex={0} role="button" className="btn capitalize">{cropMode}</button>
+        <label className="form-control w-full max-w-xs">
+          <div className="label">
+            <span className="label-text">Crop Mode</span>
           </div>
-          <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+          <select
+            className="select select-bordered capitalize"
+            value={state.cropMode}
+            onChange={(event) => {
+              setState((prev) => ({ ...prev, cropMode: event.target.value as CropMode }));
+            }}
+          >
+            <option disabled>Pick one</option>
             {
               Object.values(CropMode).map((mode) => (
-                <li key={mode}>
-                  <button
-                    onClick={() => setCropMode(mode)}
-                    className={`btn btn-block capitalize ${cropMode === mode ? 'btn-primary' : 'btn-ghost'}`}
-                  >
-                    {mode}
-                  </button>
-                </li>
+                <option key={mode} className="capitalize">
+                  {mode}
+                </option>
               ))
             }
-          </ul>
-        </div>
+          </select>
+        </label>
         <button
           onClick={handleCrop}
           className="btn btn-primary"
         >
-          Inverse Crop
+          Exclude Selection
         </button>
       </div>
     </div>
