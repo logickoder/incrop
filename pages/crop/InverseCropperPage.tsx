@@ -178,15 +178,13 @@ export default function InverseCropper(
             const height = canvasData.height;
 
             const cropBoxSize = isHorizontal ? height * 0.2 : width * 0.2;
-            const cropBoxData = {
+            // Adjust the crop box
+            cropper.setCropBoxData({
               left: isHorizontal ? 0 : width / 2 - cropBoxSize / 2,
               top: isHorizontal ? height / 2 - cropBoxSize / 2 : 0,
               width: isHorizontal ? width : cropBoxSize,
               height: isHorizontal ? cropBoxSize : height
-            };
-
-            // Adjust the crop box
-            cropper.setCropBoxData(cropBoxData);
+            });
             // Disable some cropper points based on the crop mode
             Object.keys(points).forEach((point) => {
               setStyle(
