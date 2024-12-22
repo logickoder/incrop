@@ -1,10 +1,5 @@
-import './code.css';
+import InfoPage from '../_shared/InfoPage';
 
 export default function Page() {
-  return (
-    <>
-      <h1>About</h1>
-      <p>Example of using InCrop.</p>
-    </>
-  )
+  return <InfoPage />;
 }
