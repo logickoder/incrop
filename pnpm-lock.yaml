@@ -12,8 +12,8 @@ importers:
         specifier: ^1.7.4
         version: 1.7.5
       cropperjs:
-        specifier: ^1.6.2
-        version: 1.6.2
+        specifier: 2.0.0-rc.2
+        version: 2.0.0-rc.2
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
@@ -35,6 +35,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
+      react-svg:
+        specifier: ^16.2.0
+        version: 16.2.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-toastify:
         specifier: ^10.0.6
         version: 10.0.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -44,6 +47,9 @@ importers:
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.17.9)(typescript@5.7.2)
+      ts-pattern:
+        specifier: ^5.6.0
+        version: 5.6.0
       workbox-window:
         specifier: ^7.3.0
         version: 7.3.0
@@ -652,6 +658,39 @@ packages:
   '@canvas/image-data@1.0.0':
     resolution: {integrity: sha512-BxOqI5LgsIQP1odU5KMwV9yoijleOPzHL18/YvNqF9KFSGF2K/DLlYAbDQsWqd/1nbaFuSkYD/191dpMtNh4vw==}
 
+  '@cropper/element-canvas@2.0.0-rc.2':
+    resolution: {integrity: sha512-0aqbJ3ycQM6/yn4T03vw8K/OeTB8C6+Z/jimuavy4UM2CENH9ucSLM4hAG0yYCgghIyv9Zd0unaBmtgW+I5+SQ==}
+
+  '@cropper/element-crosshair@2.0.0-rc.2':
+    resolution: {integrity: sha512-yopINLvaZhL3E2GNienju1zeQ1Cifkn5f/0R7ZabXcAgUI0s2sLzNqL8+2XV2J3DzEzYEIYc+49KmMle04nVWQ==}
+
+  '@cropper/element-grid@2.0.0-rc.2':
+    resolution: {integrity: sha512-PzAfEya6CmIc/o/lcA/NZ1rohszz42wjq2z3E2zq2jMfNDxY/EIoFnGI6+hJrxCAaoKD8UlKOEHQdRQbtnjcMg==}
+
+  '@cropper/element-handle@2.0.0-rc.2':
+    resolution: {integrity: sha512-wOWX4xpryxKcrhnJC2mHebqQQ622UN2oyQoDZcaMzvlwt7nnX3bInF+SFrIj9/aCxtCUYY0oD2gaJkfd6aNJ0g==}
+
+  '@cropper/element-image@2.0.0-rc.2':
+    resolution: {integrity: sha512-RTKnuJrqn1K8FscS11auit2W57AG04mxRNOxBldYs3lKTkwZjzJdQFkZ/Nxu+cwVXT+c6IeEiayNKvu4B7CAQg==}
+
+  '@cropper/element-selection@2.0.0-rc.2':
+    resolution: {integrity: sha512-UIgIHKHz4qNKlm5YRnC/Pu9+VrInm5TSOzkmU8kPt2swUk0WHNRv3ZcOjCQZ2ccTQnAH3FVM3FYDZ8HjRwLcBg==}
+
+  '@cropper/element-shade@2.0.0-rc.2':
+    resolution: {integrity: sha512-vHAGFxlqgflGZWkRYNWNHUY0zsV72YZGmCgtUu4sMrnWLZL/jMGhxmm8zZCe/aB94F829XcQ6uf3BoiApB+7Ng==}
+
+  '@cropper/element-viewer@2.0.0-rc.2':
+    resolution: {integrity: sha512-2z9mIA7ic3enNS4xvq9Gq6hnRZ1tPr0h+lCrOHP55NL4he63lE9oTVJfDx19rL95wUS4VxL2ANvr2BVLNiBM7A==}
+
+  '@cropper/element@2.0.0-rc.2':
+    resolution: {integrity: sha512-4G6lTJblndwzpsb43YKeHiKcocOkDIWystGzbHNbqRysE0U0lYHuRyvV7FW6a9S63wtMFSYuwFxcdUdUcmkF8w==}
+
+  '@cropper/elements@2.0.0-rc.2':
+    resolution: {integrity: sha512-NG5kdqpv7/tGvUfNjJiIHr2Ip431v5t/P5cIXTcYAgt8PRyFJmjx3fatC7NLnP/FUlv+bbzd8PMRI4LY4Gaw3Q==}
+
+  '@cropper/utils@2.0.0-rc.2':
+    resolution: {integrity: sha512-EEivNsyV6BtL496m4Q/IeAC6FGlyKjKIT1qMtwaxtkR+2ZlKnf9O7AdcGpClemIBA+TbwWAzp0UyIvYFtKUZ1Q==}
+
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
@@ -1245,6 +1284,9 @@ packages:
   '@surma/rollup-plugin-off-main-thread@2.2.3':
     resolution: {integrity: sha512-lR8q/9W7hZpMWweNiAKU7NQerBnzQQLvi8qnTDU/fxItPhtZVMbPV3lbCwjhIlNBe9Bbr5V+KHshvWmVSG9cxQ==}
 
+  '@tanem/svg-injector@10.1.68':
+    resolution: {integrity: sha512-UkJajeR44u73ujtr5GVSbIlELDWD/mzjqWe54YMK61ljKxFcJoPd9RBSaO7xj02ISCWUqJW99GjrS+sVF0UnrA==}
+
   '@tsconfig/node10@1.0.11':
     resolution: {integrity: sha512-DcRjDCujK/kCk/cUe8Xz8ZSpm8mS3mNNpta+jGCA6USEDfktlNvm1+IuZ9eTcDbNk41BHwpHHeW+N1lKCz4zOw==}
 
@@ -1699,6 +1741,9 @@ packages:
 
   cropperjs@1.6.2:
     resolution: {integrity: sha512-nhymn9GdnV3CqiEHJVai54TULFAE3VshJTXSqSJKa8yXAKyBKDWdhHarnlIPrshJ0WMFTGuFvG02YjLXfPiuOA==}
+
+  cropperjs@2.0.0-rc.2:
+    resolution: {integrity: sha512-BTuz+UeZphGOEnBCuQiNT4rk1uFfKJaKmTgoH9XU7Q8IMkLdodW7YPWINmXJXwWMt1nXiKze5qKADVbz9xtVFg==}
 
   cross-env@7.0.3:
     resolution: {integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==}
@@ -2847,6 +2892,12 @@ packages:
     resolution: {integrity: sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA==}
     engines: {node: '>=0.10.0'}
 
+  react-svg@16.2.0:
+    resolution: {integrity: sha512-qx02E8tPEMmrs6zwaZyyDnC2CxzNWcw0AOayN4tfogVfDAsNxYxuYrcGKuzr5RrD+rdmtS2GnIzW0RG03Fgerw==}
+    peerDependencies:
+      react: ^16.0.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
+
   react-toastify@10.0.6:
     resolution: {integrity: sha512-yYjp+omCDf9lhZcrZHKbSq7YMuK0zcYkDFTzfRFgTXkTFHZ1ToxwAonzA4JI5CxA91JpjFLmwEsZEgfYfOqI1A==}
     peerDependencies:
@@ -3218,6 +3269,12 @@ packages:
         optional: true
       '@swc/wasm':
         optional: true
+
+  ts-pattern@5.6.0:
+    resolution: {integrity: sha512-SL8u60X5+LoEy9tmQHWCdPc2hhb2pKI6I1tU5Jue3v8+iRqZdcT3mWPwKKJy1fMfky6uha82c8ByHAE8PMhKHw==}
+
+  tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
   tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
@@ -4187,6 +4244,72 @@ snapshots:
 
   '@canvas/image-data@1.0.0': {}
 
+  '@cropper/element-canvas@2.0.0-rc.2':
+    dependencies:
+      '@cropper/element': 2.0.0-rc.2
+      '@cropper/utils': 2.0.0-rc.2
+
+  '@cropper/element-crosshair@2.0.0-rc.2':
+    dependencies:
+      '@cropper/element': 2.0.0-rc.2
+      '@cropper/utils': 2.0.0-rc.2
+
+  '@cropper/element-grid@2.0.0-rc.2':
+    dependencies:
+      '@cropper/element': 2.0.0-rc.2
+      '@cropper/utils': 2.0.0-rc.2
+
+  '@cropper/element-handle@2.0.0-rc.2':
+    dependencies:
+      '@cropper/element': 2.0.0-rc.2
+      '@cropper/utils': 2.0.0-rc.2
+
+  '@cropper/element-image@2.0.0-rc.2':
+    dependencies:
+      '@cropper/element': 2.0.0-rc.2
+      '@cropper/element-canvas': 2.0.0-rc.2
+      '@cropper/utils': 2.0.0-rc.2
+
+  '@cropper/element-selection@2.0.0-rc.2':
+    dependencies:
+      '@cropper/element': 2.0.0-rc.2
+      '@cropper/element-canvas': 2.0.0-rc.2
+      '@cropper/element-image': 2.0.0-rc.2
+      '@cropper/utils': 2.0.0-rc.2
+
+  '@cropper/element-shade@2.0.0-rc.2':
+    dependencies:
+      '@cropper/element': 2.0.0-rc.2
+      '@cropper/element-canvas': 2.0.0-rc.2
+      '@cropper/element-selection': 2.0.0-rc.2
+      '@cropper/utils': 2.0.0-rc.2
+
+  '@cropper/element-viewer@2.0.0-rc.2':
+    dependencies:
+      '@cropper/element': 2.0.0-rc.2
+      '@cropper/element-canvas': 2.0.0-rc.2
+      '@cropper/element-image': 2.0.0-rc.2
+      '@cropper/element-selection': 2.0.0-rc.2
+      '@cropper/utils': 2.0.0-rc.2
+
+  '@cropper/element@2.0.0-rc.2':
+    dependencies:
+      '@cropper/utils': 2.0.0-rc.2
+
+  '@cropper/elements@2.0.0-rc.2':
+    dependencies:
+      '@cropper/element': 2.0.0-rc.2
+      '@cropper/element-canvas': 2.0.0-rc.2
+      '@cropper/element-crosshair': 2.0.0-rc.2
+      '@cropper/element-grid': 2.0.0-rc.2
+      '@cropper/element-handle': 2.0.0-rc.2
+      '@cropper/element-image': 2.0.0-rc.2
+      '@cropper/element-selection': 2.0.0-rc.2
+      '@cropper/element-shade': 2.0.0-rc.2
+      '@cropper/element-viewer': 2.0.0-rc.2
+
+  '@cropper/utils@2.0.0-rc.2': {}
+
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
@@ -4594,6 +4717,12 @@ snapshots:
       json5: 2.2.3
       magic-string: 0.25.9
       string.prototype.matchall: 4.0.11
+
+  '@tanem/svg-injector@10.1.68':
+    dependencies:
+      '@babel/runtime': 7.26.0
+      content-type: 1.0.5
+      tslib: 2.8.1
 
   '@tsconfig/node10@1.0.11': {}
 
@@ -5150,6 +5279,11 @@ snapshots:
   create-require@1.1.1: {}
 
   cropperjs@1.6.2: {}
+
+  cropperjs@2.0.0-rc.2:
+    dependencies:
+      '@cropper/elements': 2.0.0-rc.2
+      '@cropper/utils': 2.0.0-rc.2
 
   cross-env@7.0.3:
     dependencies:
@@ -6385,6 +6519,15 @@ snapshots:
 
   react-refresh@0.14.2: {}
 
+  react-svg@16.2.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.26.0
+      '@tanem/svg-injector': 10.1.68
+      '@types/prop-types': 15.7.14
+      prop-types: 15.8.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   react-toastify@10.0.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       clsx: 2.1.1
@@ -6891,6 +7034,10 @@ snapshots:
       typescript: 5.7.2
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
+
+  ts-pattern@5.6.0: {}
+
+  tslib@2.8.1: {}
 
   tunnel-agent@0.6.0:
     dependencies:

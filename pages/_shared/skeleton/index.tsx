@@ -3,6 +3,8 @@ import { Info, Moon, Sun } from 'lucide-react';
 import useSkeletonStore from './store';
 import { AppTheme } from './types';
 import Link from '../Link';
+import Github from '../../../assets/github.svg';
+import { ReactSVG } from 'react-svg';
 
 export default function Skeleton({ children }: { children: ReactNode }) {
   const iconClass = 'w-5 h-5 text-base-content';
@@ -26,7 +28,7 @@ export default function Skeleton({ children }: { children: ReactNode }) {
               <h1 className="text-2xl font-bold text-primary">InCrop</h1>
             </Link>
             <span
-              className="tooltip tooltip-bottom"
+              className="tooltip tooltip-right"
               data-tip="Remove center, join edges - Inverse image cropping"
             >
               <Info className={iconClass} />
@@ -42,15 +44,15 @@ export default function Skeleton({ children }: { children: ReactNode }) {
               {theme == AppTheme.dark ? <Sun className={iconClass} /> : <Moon className={iconClass} />}
             </button>
 
-            {/*<a*/}
-            {/*  href="https://github.com/yourusername/incrop"*/}
-            {/*  target="_blank"*/}
-            {/*  rel="noopener noreferrer"*/}
-            {/*  className="btn btn-ghost btn-circle"*/}
-            {/*  aria-label="GitHub Repository"*/}
-            {/*>*/}
-            {/*  <GitHub className="w-5 h-5" />*/}
-            {/*</a>*/}
+            <a
+              href="https://github.com/logickoder/incrop"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost btn-circle"
+              aria-label="GitHub Repository"
+            >
+              <ReactSVG src={Github} className={iconClass} wrapper="span" />
+            </a>
           </div>
         </div>
       </header>

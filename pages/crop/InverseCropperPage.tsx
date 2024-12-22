@@ -6,13 +6,11 @@ import { getSafely } from '../../utils/object';
 
 interface InverseCropperProps {
   imageSrc: string;
-  onCrop: (cropData: unknown) => void;
 }
 
 export default function InverseCropper(
   {
-    imageSrc,
-    onCrop
+    imageSrc
   }: InverseCropperProps
 ) {
   const [cropMode, setCropMode] = useState(CropMode.horizontal);
@@ -31,33 +29,89 @@ export default function InverseCropper(
   }), []);
 
   const handleCrop = () => {
-    if (cropper) {
-      // Get the crop box data
-      const cropBoxData = cropper.getCropBoxData();
-      const canvasData = cropper.getCanvasData();
-      const imageData = cropper.getImageData();
-
-      // Inverse crop logic
-      const inverseCropData = {
-        cropInfo: {
-          x: cropBoxData.left - canvasData.left,
-          y: cropBoxData.top - canvasData.top,
-          width: cropBoxData.width,
-          height: cropBoxData.height
-        },
-        imageInfo: imageData
-      };
-
-      console.log(inverseCropData);
-
-      onCrop(inverseCropData);
+    if (!cropper) {
+      return;
     }
+
+    const isHorizontal = cropMode === CropMode.horizontal;
+
+    // Get the crop box data
+    const cropBoxData = cropper.getCropBoxData();
+    const canvasData = cropper.getCanvasData();
+    const imageData = cropper.getImageData();
+
+    // scale the crop box data to the original image size
+    const widthRatio = imageData.naturalWidth / imageData.width;
+    const heightRatio = imageData.naturalHeight / imageData.height;
+    const cropInfo = {
+      x: (cropBoxData.left - canvasData.left) * widthRatio,
+      y: (cropBoxData.top - canvasData.top) * heightRatio,
+      width: cropBoxData.width * widthRatio,
+      height: cropBoxData.height * heightRatio
+    };
+
+    // Create a canvas
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d')!;
+
+    // @ts-expect-error image exists on the cropper
+    const image = cropper.image;
+
+    // Set the canvas size to the image size - cropped size
+    canvas.width = isHorizontal ? imageData.naturalWidth : imageData.naturalWidth - cropInfo.width;
+    canvas.height = isHorizontal ? imageData.naturalHeight - cropInfo.height : imageData.naturalHeight;
+
+    // Draw the first part of the cropped image
+    const width = isHorizontal ? imageData.naturalWidth : cropInfo.x;
+    const height = isHorizontal ? cropInfo.y : imageData.naturalHeight;
+    ctx.drawImage(
+      image,
+      0,  // Source x
+      0,  // Source y
+      width,   // Source width
+      height,  // Source height
+      0,  // Destination x
+      0,  // Destination y
+      width,   // Destination width
+      height   // Destination height
+    );
+
+    // Draw the second part of the cropped image
+    const sourceX = isHorizontal ? 0 : cropInfo.x + cropInfo.width;
+    const sourceY = isHorizontal ? cropInfo.y + cropInfo.height : 0;
+    ctx.drawImage(
+      image,
+      sourceX,  // Source x
+      sourceY,  // Source y
+      isHorizontal ? imageData.naturalWidth : imageData.naturalWidth - sourceX,   // Source width
+      isHorizontal ? imageData.naturalHeight - sourceY : imageData.naturalHeight,  // Source height
+      isHorizontal ? 0 : cropInfo.x,  // Destination x
+      isHorizontal ? cropInfo.y : 0, // Destination y
+      isHorizontal ? canvas.width : canvas.width - cropInfo.x,     // Destination width
+      isHorizontal ? canvas.height - cropInfo.y : canvas.height   // Destination height
+    );
+
+    // Get the cropped image as a Data URL
+    const croppedImage = canvas.toDataURL('image/png');
+
+    // Create a link and trigger download
+    const link = document.createElement('a');
+    link.href = croppedImage;
+    link.download = 'incrop.png';
+    link.click();
   };
 
   useEffect(() => {
     if (!cropper) {
       return;
     }
+
+    cropper.setData({
+      x: 0,
+      y: 0,
+      width: 100,
+      height: 100
+    });
 
     const isHorizontal = cropMode === CropMode.horizontal;
     const canvasData = cropper.getCanvasData();
@@ -120,6 +174,7 @@ export default function InverseCropper(
           scalable={false}
           movable={false}
           cropmove={(event) => {
+            console.log(event.detail.action, cropMode, points[event.detail.action]);
             // @ts-expect-error - disable cropper move if not the right mode
             if (event.detail.action !== 'all' && cropMode !== points[event.detail.action]) {
               event.preventDefault();
