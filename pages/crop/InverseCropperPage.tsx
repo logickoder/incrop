@@ -121,57 +121,6 @@ export default function InverseCropper(
     setState((prev) => ({ ...prev, cropper: null, key: prev.key + 1 }));
   }, [preview, state.cropMode]);
 
-  // Set the crop box data based on the crop mode
-  useEffect(() => {
-    const cropper = state.cropper;
-    const cropMode = state.cropMode;
-
-    if (!cropper) {
-      return;
-    }
-
-    // cropper.setData({
-    //   x: 0,
-    //   y: 0,
-    //   width: 100,
-    //   height: 100
-    // });
-
-    const isHorizontal = cropMode === CropMode.horizontal;
-    const canvasData = cropper.getCanvasData();
-    const cropBoxSize = isHorizontal ? canvasData.height * 0.2 : canvasData.width * 0.2;
-    // Adjust the crop box
-    cropper.setCropBoxData({
-      left: isHorizontal ? 0 : cropper.getCanvasData().width / 2 - cropBoxSize / 2,
-      top: isHorizontal ? cropper.getCanvasData().height / 2 - cropBoxSize / 2 : 0,
-      width: isHorizontal ? cropper.getCanvasData().width : cropBoxSize,
-      height: isHorizontal ? cropBoxSize : cropper.getCanvasData().height
-    });
-    // Disable some cropper points based on the crop mode
-    Object.keys(points).forEach((point) => {
-      setStyle(
-        getSafely(cropper, 'cropBox')?.querySelector(`.cropper-point.point-${point}`),
-        // @ts-expect-error - check if the point should be enabled
-        { display: points[point] === cropMode ? 'block' : 'none' }
-      );
-    });
-  }, [state.cropper, state.cropMode, points]);
-
-  // Change the drag box and face background color and opacity
-  // Make the drag box transparent and the face black with 0.3 opacity (since that is what we want to crop out)
-  useEffect(() => {
-    const cropper = state.cropper;
-    if (!cropper) {
-      return;
-    }
-
-    // make the drag box transparent instead of the half-black color
-    setStyle(getSafely(cropper, 'dragBox'), { backgroundColor: 'inherit', opacity: 'inherit' });
-
-    // Then make the face black with 0.3 opacity, since that is what we want to crop out
-    setStyle(getSafely(cropper, 'face'), { backgroundColor: 'black', opacity: '0.3' });
-  }, [state.cropper]);
-
   return (
     <div className="space-y-4">
       <div className="cropper-wrapper relative">
@@ -198,6 +147,55 @@ export default function InverseCropper(
             }
           }}
           rotatable={false}
+          ready={(event) => {
+            if (!event.target) {
+              return;
+            }
+            const cropper = getSafely(event.target, 'cropper') as Cropper;
+            const cropMode = state.cropMode;
+            if (!cropper) {
+              return;
+            }
+
+            /**
+             * This is where the magic happens,
+             * first we make the drag box transparent instead of the half-black color,
+             * then we make the face black with 0.3 opacity, since that is what we want to crop out
+             */
+
+            // make the drag box transparent instead of the half-black color
+            setStyle(getSafely(cropper, 'dragBox'), { backgroundColor: 'inherit', opacity: 'inherit' });
+
+            // Then make the face black with 0.3 opacity, since that is what we want to crop out
+            setStyle(getSafely(cropper, 'face'), { backgroundColor: 'black', opacity: '0.3' });
+
+            /**
+             * Then we adjust the crop box to the desired crop mode
+             */
+            const isHorizontal = cropMode === CropMode.horizontal;
+            const canvasData = cropper.getCanvasData();
+            const width = canvasData.width;
+            const height = canvasData.height;
+
+            const cropBoxSize = isHorizontal ? height * 0.2 : width * 0.2;
+            const cropBoxData = {
+              left: isHorizontal ? 0 : width / 2 - cropBoxSize / 2,
+              top: isHorizontal ? height / 2 - cropBoxSize / 2 : 0,
+              width: isHorizontal ? width : cropBoxSize,
+              height: isHorizontal ? cropBoxSize : height
+            };
+
+            // Adjust the crop box
+            cropper.setCropBoxData(cropBoxData);
+            // Disable some cropper points based on the crop mode
+            Object.keys(points).forEach((point) => {
+              setStyle(
+                getSafely(cropper, 'cropBox')?.querySelector(`.cropper-point.point-${point}`),
+                // @ts-expect-error - check if the point should be enabled
+                { display: points[point] === cropMode ? 'block' : 'none' }
+              );
+            });
+          }}
           onInitialized={(cropper) => setState((prev) => ({ ...prev, cropper }))}
         />
       </div>
@@ -227,8 +225,9 @@ export default function InverseCropper(
         <button
           onClick={handleCrop}
           className="btn btn-primary w-full md:w-fit"
+          disabled={state.loading}
         >
-          Exclude Selection
+          Exclude Selection {state.loading && <span className="ml-2 loading loading-dots loading-sm" />}
         </button>
       </div>
     </div>
