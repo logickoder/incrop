@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Cropper, { ReactCropperElement } from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import { CropMode } from './types';
-import useWindowSize from '../../utils/useWindowSize';
 import { toast } from 'react-toastify';
 import { CropImage } from '../index/types';
 import { getSafely, setStyle } from '../../utils';
@@ -20,7 +19,6 @@ export default function InverseCropper(
     loading: false
   });
   const cropperRef = useRef<(HTMLImageElement | ReactCropperElement)>(null);
-  const [width, height] = useWindowSize();
 
   const points = useMemo(() => ({
     'n': CropMode.horizontal,
@@ -121,7 +119,7 @@ export default function InverseCropper(
   // force a re-render to reset the cropper instance
   useEffect(() => {
     setState((prev) => ({ ...prev, cropper: null, key: prev.key + 1 }));
-  }, [width, height, preview, state.cropMode]);
+  }, [preview, state.cropMode]);
 
   // Set the crop box data based on the crop mode
   useEffect(() => {
@@ -132,12 +130,12 @@ export default function InverseCropper(
       return;
     }
 
-    cropper.setData({
-      x: 0,
-      y: 0,
-      width: 100,
-      height: 100
-    });
+    // cropper.setData({
+    //   x: 0,
+    //   y: 0,
+    //   width: 100,
+    //   height: 100
+    // });
 
     const isHorizontal = cropMode === CropMode.horizontal;
     const canvasData = cropper.getCanvasData();
@@ -175,14 +173,14 @@ export default function InverseCropper(
   }, [state.cropper]);
 
   return (
-    <div className="inverse-cropper-container space-y-4">
+    <div className="space-y-4">
       <div className="cropper-wrapper relative">
         <Cropper
           key={state.key}
           ref={cropperRef}
           src={preview}
           style={{
-            height: '70vh',
+            height: '60vh',
             width: '100%'
           }}
           viewMode={1}
@@ -204,8 +202,8 @@ export default function InverseCropper(
         />
       </div>
 
-      <div className="crop-actions flex justify-between items-center">
-        <label className="form-control w-full max-w-xs">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <label className="form-control w-full md:max-w-xs">
           <div className="label">
             <span className="label-text">Crop Mode</span>
           </div>
@@ -228,7 +226,7 @@ export default function InverseCropper(
         </label>
         <button
           onClick={handleCrop}
-          className="btn btn-primary"
+          className="btn btn-primary w-full md:w-fit"
         >
           Exclude Selection
         </button>
