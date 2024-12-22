@@ -23,17 +23,9 @@ export default function Skeleton({ children }: { children: ReactNode }) {
     <div className={`flex flex-col min-h-screen ${theme}`}>
       <header className="sticky top-0 z-50 bg-base-100 shadow-sm">
         <div className="navbar container mx-auto px-4 py-2 flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Link href="/">
-              <h1 className="text-2xl font-bold text-primary">InCrop</h1>
-            </Link>
-            <span
-              className="tooltip tooltip-right"
-              data-tip="Remove center, join edges - Inverse image cropping"
-            >
-              <Info className={iconClass} />
-            </span>
-          </div>
+          <Link href="/">
+            <h1 className="text-2xl font-bold text-primary">InCrop</h1>
+          </Link>
 
           <div className="flex items-center space-x-4">
             <button
@@ -44,7 +36,11 @@ export default function Skeleton({ children }: { children: ReactNode }) {
               {theme == AppTheme.dark ? <Sun className={iconClass} /> : <Moon className={iconClass} />}
             </button>
 
-            <a
+            <Link href="/about">
+              <Info className={iconClass} />
+            </Link>
+
+            <Link
               href="https://github.com/logickoder/incrop"
               target="_blank"
               rel="noopener noreferrer"
@@ -52,7 +48,7 @@ export default function Skeleton({ children }: { children: ReactNode }) {
               aria-label="GitHub Repository"
             >
               <ReactSVG src={Github} className={iconClass} wrapper="span" />
-            </a>
+            </Link>
           </div>
         </div>
       </header>
