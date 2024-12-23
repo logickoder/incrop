@@ -5,6 +5,7 @@ import { CropMode } from './types';
 import { toast } from 'react-toastify';
 import { CropImage } from '../index/types';
 import { getSafely, setStyle } from '../../utils';
+import { getAnalytics, logEvent } from 'firebase/analytics';
 
 export default function InverseCropper(
   {
@@ -108,6 +109,12 @@ export default function InverseCropper(
       link.href = croppedImage;
       link.download = `incrop-${file.name}`;
       link.click();
+
+      const analytics = getAnalytics();
+      logEvent(analytics, 'crop_image', {
+        cropMode: state.cropMode,
+        fileType: file.type
+      });
     } catch (error) {
       console.error('Failed to crop image', error);
       toast('An error occurred when cropping your image', { type: 'error' });

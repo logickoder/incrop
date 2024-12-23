@@ -4,6 +4,7 @@ import useSkeletonStore from './store';
 import { AppTheme } from './types';
 import Link from '../Link';
 import Github from '../../../assets/github.svg';
+import Twitter from '../../../assets/x.svg';
 import { ReactSVG } from 'react-svg';
 
 export default function Skeleton({ children }: { children: ReactNode }) {
@@ -27,7 +28,7 @@ export default function Skeleton({ children }: { children: ReactNode }) {
             <h1 className="text-2xl font-bold text-primary">InCrop</h1>
           </Link>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-3">
             <button
               onClick={toggleTheme}
               className="btn btn-ghost btn-circle"
@@ -36,8 +37,18 @@ export default function Skeleton({ children }: { children: ReactNode }) {
               {theme == AppTheme.dark ? <Sun className={iconClass} /> : <Moon className={iconClass} />}
             </button>
 
-            <Link href="/about">
+            <Link href="/about" className="btn btn-ghost btn-circle">
               <Info className={iconClass} />
+            </Link>
+
+            <Link
+              href="https://twitter.com/logickoder"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost btn-circle"
+              aria-label="logickoder's Twitter"
+            >
+              <ReactSVG src={Twitter} className={iconClass} wrapper="span" />
             </Link>
 
             <Link
