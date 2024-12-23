@@ -14,11 +14,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create .env File
+        run: echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
+
+      - name: Verify .env File
+        run: cat .env
+
       - uses: pnpm/action-setup@v4
         with:
           version: 9
 
-      - run: pnpm ci && pnpm run build
+      - name: Install Dependencies
+        run: pnpm i --frozen-lockfile
+
+      - name: Build Application
+        run: pnpm run build
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
