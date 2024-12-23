@@ -15,7 +15,7 @@ export default function InverseCropper(
 ) {
   const [state, setState] = useState({
     key: 0,
-    cropMode: CropMode.vertical,
+    cropMode: CropMode.horizontal,
     cropper: null as Cropper | null,
     loading: false
   });
