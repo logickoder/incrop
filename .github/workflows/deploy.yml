@@ -14,7 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: npm ci && npm run build
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - run: pnpm ci && pnpm run build
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
