@@ -37,7 +37,7 @@ export default function Skeleton({ children }: { children: ReactNode }) {
               {theme == AppTheme.dark ? <Sun className={iconClass} /> : <Moon className={iconClass} />}
             </button>
 
-            <Link href="/about" className="btn btn-ghost btn-circle">
+            <Link href="/about/" className="btn btn-ghost btn-circle">
               <Info className={iconClass} />
             </Link>
 
@@ -74,7 +74,7 @@ export default function Skeleton({ children }: { children: ReactNode }) {
         <div className="flex flex-col sm:flex-row items-center space-x-4">
           <span>© 2024 <Link href="https://github.com/logickoder" target="_blank">Jeffery Orazulike (logickoder)</Link>. All Rights Reserved.</span>
           <div className="flex space-x-2">
-            <span className="text-xs bg-primary/10 px-2 py-1 rounded">Inverse Crop Innovator</span>
+            <span className="text-xs bg-primary/10 px-2 py-1 rounded">Inverse Crop</span>
             <span className="text-xs bg-accent/10 px-2 py-1 rounded">Image Processing</span>
           </div>
         </div>

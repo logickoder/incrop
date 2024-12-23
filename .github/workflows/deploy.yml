@@ -39,11 +39,12 @@ jobs:
         run: |
           prod_flag=""
           if [ "$BRANCH_NAME" = "main" ]; then prod_flag="--prod"; fi
+          commit_message=$(git log -1 --pretty=%B) # Get the latest commit message
           netlify deploy \
-            --dir dist/client \
             --site ${{ secrets.NETLIFY_SITE_ID }} \
             --auth ${{ secrets.NETLIFY_API_TOKEN }} \
             $prod_flag \
+            --message "$commit_message" \ # Set deploy message
             --json \
             > deploy_output.json
 
