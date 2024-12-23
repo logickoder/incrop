@@ -110,6 +110,8 @@ export default function InverseCropper(
       link.download = `incrop-${file.name}`;
       link.click();
 
+      toast('Image cropped successfully, check your downloads', { type: 'success' });
+
       const analytics = getAnalytics();
       logEvent(analytics, 'crop_image', {
         cropMode: state.cropMode,
