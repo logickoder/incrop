@@ -21,7 +21,7 @@ const onRenderHtml: OnRenderHtmlAsync = async (pageContext): ReturnType<OnRender
     ) : '';
 
   const title = getPageTitle(pageContext);
-  const desc = pageContext.data?.description || pageContext.config.description || 'Demo of using InCrop';
+  const desc = pageContext.data?.description ?? pageContext.config.description ?? 'Redefine your images, your way! InCrop is the ultimate tool for inverse cropping, letting you seamlessly remove the center of your photos and bring edges together for a unique, standout effect. Crop smarter, not harder!';
 
   const documentHtml = escapeInject`<!DOCTYPE html>
     <html lang="en">
