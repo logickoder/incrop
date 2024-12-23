@@ -1,5 +1,7 @@
 # InCrop 🖼️
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/f2abc2ff-1350-4604-83b4-69bf495a5547/deploy-status)](https://app.netlify.com/sites/incrop/deploys)
+
 Redefine your images, your way! InCrop is the ultimate tool for inverse cropping, letting you seamlessly remove the
 center of your photos and bring edges together for a unique, standout effect. Crop smarter, not harder!
 
