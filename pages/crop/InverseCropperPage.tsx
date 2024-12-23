@@ -197,7 +197,7 @@ export default function InverseCropper(
               setStyle(
                 getSafely(cropper, 'cropBox')?.querySelector(`.cropper-point.point-${point}`),
                 // @ts-expect-error - check if the point should be enabled
-                { display: points[point] === cropMode ? 'block' : 'none' }
+                { display: points[point] === cropMode ? 'block' : 'none', width: '10px', height: '10px' }
               );
             });
           }}
