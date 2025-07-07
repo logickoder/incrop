@@ -20,6 +20,7 @@ export default function InverseCropper({ file, preview }: CropImage) {
   const [showOriginal, setShowOriginal] = useState(false);
   const [cropperKey, setCropperKey] = useState(0);
   const [isHistoryVisible, setIsHistoryVisible] = useState(false);
+  const [featherRadius, setFeatherRadius] = useState(20);
 
   /**
    * Add a new crop step to the history and generate preview
@@ -41,12 +42,13 @@ export default function InverseCropper({ file, preview }: CropImage) {
         timestamp: Date.now()
       };
 
-      // Apply the crop to get the new current preview
+      // Apply the crop to get the new current preview with smooth blending
       const newCurrentPreview = await ProgressiveCropProcessor.applyCrop(
         state.currentPreview,
         currentCropData,
         currentCropMode,
-        file.name
+        file.name,
+        featherRadius
       );
 
       setState(prev => ({
@@ -65,14 +67,15 @@ export default function InverseCropper({ file, preview }: CropImage) {
       const analytics = getAnalytics();
       logEvent(analytics, 'add_crop_step', {
         cropMode: currentCropMode,
-        stepCount: state.cropHistory.length + 1
+        stepCount: state.cropHistory.length + 1,
+        featherRadius
       });
     } catch (error) {
       console.error('Failed to add crop step', error);
       toast('An error occurred when processing the crop', { type: 'error' });
       setState(prev => ({ ...prev, isProcessing: false }));
     }
-  }, [currentCropData, currentCropMode, state.currentPreview, state.cropHistory.length, file.name]);
+  }, [currentCropData, currentCropMode, state.currentPreview, state.cropHistory.length, file.name, featherRadius]);
 
   /**
    * Undo to a specific crop step
@@ -83,10 +86,10 @@ export default function InverseCropper({ file, preview }: CropImage) {
     try {
       const stepsToKeep = state.cropHistory.slice(0, stepIndex + 1);
 
-      // Regenerate preview from original image with remaining steps
+      // Regenerate preview from original image with remaining steps using smooth blending
       const newPreview = stepIndex === -1
         ? state.originalImage
-        : await ProgressiveCropProcessor.applyProgressiveCrops(state.originalImage, stepsToKeep);
+        : await ProgressiveCropProcessor.applyProgressiveCrops(state.originalImage, stepsToKeep, featherRadius);
 
       setState(prev => ({
         ...prev,
@@ -105,7 +108,7 @@ export default function InverseCropper({ file, preview }: CropImage) {
       toast('An error occurred during undo', { type: 'error' });
       setState(prev => ({ ...prev, isProcessing: false }));
     }
-  }, [state.cropHistory, state.originalImage]);
+  }, [state.cropHistory, state.originalImage, featherRadius]);
 
   /**
    * Download the final processed image
@@ -114,10 +117,11 @@ export default function InverseCropper({ file, preview }: CropImage) {
     setState(prev => ({ ...prev, isProcessing: true }));
 
     try {
-      // Generate high-quality final image
+      // Generate high-quality final image with smooth blending
       const finalImage = await ProgressiveCropProcessor.applyProgressiveCrops(
         state.originalImage,
-        state.cropHistory
+        state.cropHistory,
+        featherRadius
       );
 
       // Create download link
@@ -131,7 +135,8 @@ export default function InverseCropper({ file, preview }: CropImage) {
       const analytics = getAnalytics();
       logEvent(analytics, 'download_progressive_crop', {
         totalSteps: state.cropHistory.length,
-        fileType: file.type
+        fileType: file.type,
+        featherRadius
       });
     } catch (error) {
       console.error('Failed to download image', error);
@@ -139,7 +144,7 @@ export default function InverseCropper({ file, preview }: CropImage) {
     } finally {
       setState(prev => ({ ...prev, isProcessing: false }));
     }
-  }, [state.originalImage, state.cropHistory, file.name, file.type]);
+  }, [state.originalImage, state.cropHistory, file.name, file.type, featherRadius]);
 
   /**
    * Reset all crops and start over
@@ -278,6 +283,27 @@ export default function InverseCropper({ file, preview }: CropImage) {
                   <option value={CropMode.vertical}>Vertical Strip</option>
                 </select>
               </label>
+
+              {/* Feather radius slider */}
+              <div className="form-control w-full sm:max-w-xs">
+                <div className="label pb-1">
+                  <span className="label-text font-medium text-sm">Feather Radius</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={featherRadius}
+                  onChange={(e) => setFeatherRadius(Number(e.target.value))}
+                  className="range range-primary"
+                  disabled={state.isProcessing || showOriginal}
+                />
+                <div className="flex justify-between text-xs px-2">
+                  <span>0</span>
+                  <span>{featherRadius}</span>
+                  <span>100</span>
+                </div>
+              </div>
 
               {/* Add crop button */}
               <button

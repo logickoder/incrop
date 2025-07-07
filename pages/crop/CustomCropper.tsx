@@ -469,7 +469,7 @@ export default function CustomCropper({
             }}
           />
 
-          {/* Rule of thirds grid, constrained to image boundaries for composition guidiance */}
+          {/* Rule of thirds grid, constrained to image boundaries for composition guidance */}
           {imageRef.current && (
             <div
               className="absolute pointer-events-none"
