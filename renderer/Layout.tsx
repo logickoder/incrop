@@ -10,7 +10,9 @@ export default function Layout({ children, pageContext }: { children: ReactNode;
     <StrictMode>
       <PageContextProvider pageContext={pageContext}>
         <Skeleton>{children}</Skeleton>
-        <ToastContainer />
+        <ToastContainer
+          autoClose={1000}
+        />
       </PageContextProvider>
     </StrictMode>
   );

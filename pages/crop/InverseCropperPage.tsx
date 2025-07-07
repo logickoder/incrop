@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { CropMode, CropRegion, CropStep, ProgressiveCropState } from './types';
 import { toast } from 'react-toastify';
 import { CropImage } from '../index/types';
@@ -19,6 +19,7 @@ export default function InverseCropper({ file, preview }: CropImage) {
   const [currentCropData, setCurrentCropData] = useState<CropRegion | null>(null);
   const [showOriginal, setShowOriginal] = useState(false);
   const [cropperKey, setCropperKey] = useState(0);
+  const [isHistoryVisible, setIsHistoryVisible] = useState(false);
 
   /**
    * Add a new crop step to the history and generate preview
@@ -158,7 +159,7 @@ export default function InverseCropper({ file, preview }: CropImage) {
     <div className="flex flex-col">
       {/* Header with crop history */}
       <div className="flex-shrink-0 bg-base-100 border-b border-base-300 p-3">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Crop history info */}
           <div className="flex items-center gap-4">
             <div className="text-sm font-medium">
@@ -171,33 +172,40 @@ export default function InverseCropper({ file, preview }: CropImage) {
               )}
             </div>
 
-            {/* Crop history list - compact */}
-            {state.cropHistory.length > 0 && (
-              <div className="flex items-center gap-2">
-                {state.cropHistory.map((step, index) => (
-                  <div key={step.id} className="flex items-center">
-                    <div className="badge badge-sm badge-outline">
-                      {index + 1}: {step.cropMode[0].toUpperCase()}
-                    </div>
-                    <button
-                      onClick={() => undoToStep(index - 1)}
-                      className="btn btn-xs btn-ghost ml-1 text-warning"
-                      disabled={state.isProcessing}
-                      title={`Undo to ${index === 0 ? 'original' : `step ${index}`}`}
-                    >
-                      ✕
-                    </button>
-                    {index < state.cropHistory.length - 1 && (
-                      <div className="mx-1 text-base-content/30">→</div>
-                    )}
+            {/* Crop history list - compact and hidden on small screens */}
+            <div className="hidden md:flex items-center gap-2">
+              {state.cropHistory.map((step, index) => (
+                <div key={step.id} className="flex items-center">
+                  <div className="badge badge-sm badge-outline">
+                    {index + 1}: {step.cropMode[0].toUpperCase()}
                   </div>
-                ))}
-              </div>
-            )}
+                  <button
+                    onClick={() => undoToStep(index - 1)}
+                    className="btn btn-xs btn-ghost ml-1 text-warning"
+                    disabled={state.isProcessing}
+                    title={`Undo to ${index === 0 ? 'original' : `step ${index}`}`}
+                  >
+                    ✕
+                  </button>
+                  {index < state.cropHistory.length - 1 && (
+                    <div className="mx-1 text-base-content/30">→</div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Action buttons */}
           <div className="flex items-center gap-2">
+            {state.cropHistory.length > 0 && (
+              <button
+                onClick={() => setIsHistoryVisible(true)}
+                className="btn btn-sm btn-outline md:hidden"
+                disabled={state.isProcessing}
+              >
+                History
+              </button>
+            )}
             <button
               onClick={resetAllCrops}
               className="btn btn-sm btn-outline btn-warning"
@@ -252,10 +260,11 @@ export default function InverseCropper({ file, preview }: CropImage) {
 
         {/* Bottom controls */}
         <div className="z-10 mt-6">
-          <div className="bg-base-100/95 backdrop-blur-sm border border-base-300 rounded-lg p-3 shadow-lg">
-            <div className="flex items-end justify-between gap-4">
+          <div
+            className="bg-base-100/95 backdrop-blur-sm border border-base-300 rounded-lg p-3 shadow-lg max-w-lg mx-auto">
+            <div className="flex flex-col sm:flex-row items-end justify-between gap-4">
               {/* Crop mode selector */}
-              <label className="form-control flex-1 max-w-xs">
+              <label className="form-control w-full sm:flex-1 sm:max-w-xs">
                 <div className="label pb-1">
                   <span className="label-text font-medium text-sm">Crop Mode</span>
                 </div>
@@ -273,7 +282,7 @@ export default function InverseCropper({ file, preview }: CropImage) {
               {/* Add crop button */}
               <button
                 onClick={addCropStep}
-                className="btn btn-accent"
+                className="btn btn-accent w-full sm:w-auto"
                 disabled={state.isProcessing || !currentCropData || showOriginal}
               >
                 {state.isProcessing ? (
@@ -288,6 +297,48 @@ export default function InverseCropper({ file, preview }: CropImage) {
             </div>
           </div>
         </div>
+
+        {/* History Modal for mobile */}
+        {isHistoryVisible && (
+          <div className="fixed inset-0 bg-black/60 z-20 flex items-center justify-center">
+            <div className="bg-base-100 rounded-lg shadow-xl p-4 w-11/12 max-w-md">
+              <h3 className="text-lg font-bold mb-4">Crop History</h3>
+              <div className="flex flex-col gap-3">
+                {state.cropHistory.map((step, index) => (
+                  <div key={step.id} className="flex items-center justify-between p-2 rounded-lg bg-base-200">
+                    <div className="flex items-center gap-3">
+                      <div className="badge badge-outline">
+                        {index + 1}: {step.cropMode}
+                      </div>
+                      <span className="text-xs text-base-content/70">
+                        {new Date(step.timestamp).toLocaleTimeString()}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        void undoToStep(index - 1);
+                        setIsHistoryVisible(false);
+                      }}
+                      className="btn btn-xs btn-ghost text-warning"
+                      disabled={state.isProcessing}
+                      title={`Undo to ${index === 0 ? 'original' : `step ${index}`}`}
+                    >
+                      Undo to here
+                    </button>
+                  </div>
+                ))}
+                {state.cropHistory.length === 0 && (
+                  <p className="text-center text-base-content/60 py-4">No history yet.</p>
+                )}
+              </div>
+              <div className="mt-6 text-right">
+                <button onClick={() => setIsHistoryVisible(false)} className="btn">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Operations disabled overlay when showing original */}
         {showOriginal && (

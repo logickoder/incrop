@@ -11,9 +11,16 @@ interface CustomCropperProps {
   onCropChange?: (cropData: CropRegion) => void;
   cropMode: CropMode;
   onReady?: (cropData: CropRegion) => void;
+  showCropArea?: boolean;
 }
 
-export default function CustomCropper({ src, onCropChange, cropMode, onReady }: CustomCropperProps) {
+export default function CustomCropper({
+                                        src,
+                                        onCropChange,
+                                        cropMode,
+                                        onReady,
+                                        showCropArea = true
+                                      }: CustomCropperProps) {
   // DOM references
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -164,15 +171,64 @@ export default function CustomCropper({ src, onCropChange, cropMode, onReady }: 
   }, [cropData]);
 
   /**
-   * Handle mouse down events for starting drag or resize operations
+   * Revalidate crop area dimensions and grid on window resize
    */
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const revalidateCropArea = useCallback(() => {
+    if (!imageRef.current || !containerRef.current || !imageLoaded) return;
+
+    const image = imageRef.current;
+
+    // Update initial crop dimensions based on new window size
+    const scaleX = image.clientWidth / image.naturalWidth;
+    const scaleY = image.clientHeight / image.naturalHeight;
+
+    setInitialCropDimensions({
+      width: cropData.width * scaleX,
+      height: cropData.height * scaleY
+    });
+
+    // Force re-render of crop area with new dimensions
+    onCropChangeRef.current?.(cropData);
+  }, [imageLoaded, cropData]);
+
+  /**
+   * Handle window resize events with debouncing
+   */
+  useEffect(() => {
+    const handleResize = () => {
+      // Debounce the revalidation to avoid excessive calls
+      const timeoutId = setTimeout(() => {
+        revalidateCropArea();
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
+    };
+
+    // Add resize event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [revalidateCropArea]);
+
+  /**
+   * Handle mouse down events for starting drag or resize operations
+   * Also handles touch events for mobile support
+   */
+  const handleMouseDown = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (!containerRef.current || !imageRef.current) return;
 
     e.preventDefault();
+
+    // Get coordinates from either mouse or touch event
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
     const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
 
     const displayCrop = getDisplayCropData();
     const target = e.target as HTMLElement;
@@ -180,7 +236,7 @@ export default function CustomCropper({ src, onCropChange, cropMode, onReady }: 
     if (target.classList.contains('resize-handle')) {
       setIsResizing(true);
       setResizeHandle(target.dataset.handle || '');
-      setDragStart({ x: e.clientX, y: e.clientY });
+      setDragStart({ x: clientX, y: clientY });
     } else if (
       x >= displayCrop.x &&
       x <= displayCrop.x + displayCrop.width &&
@@ -188,17 +244,24 @@ export default function CustomCropper({ src, onCropChange, cropMode, onReady }: 
       y <= displayCrop.y + displayCrop.height
     ) {
       setIsDragging(true);
-      setDragStart({ x: e.clientX - displayCrop.x, y: e.clientY - displayCrop.y });
+      setDragStart({ x: clientX - displayCrop.x, y: clientY - displayCrop.y });
     }
   }, [getDisplayCropData]);
 
   /**
    * Handle mouse movement for drag and resize operations
+   * Also handles touch events for mobile support
    * Constrains movement to image boundaries and enforces minimum sizes
    */
-  const handleMouseMove = useCallback((e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent | TouchEvent) => {
     if (!containerRef.current || !imageRef.current) return;
     if (!isDragging && !isResizing) return;
+
+    e.preventDefault(); // Prevent scrolling on mobile
+
+    // Get coordinates from either mouse or touch event
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
 
     const containerRect = containerRef.current.getBoundingClientRect();
     const image = imageRef.current;
@@ -213,15 +276,15 @@ export default function CustomCropper({ src, onCropChange, cropMode, onReady }: 
 
     if (isDragging) {
       // Constrain drag to image boundaries
-      const newX = Math.max(imageOffsetX, Math.min(e.clientX - dragStart.x, imageOffsetX + imageDisplayWidth - displayCrop.width));
-      const newY = Math.max(imageOffsetY, Math.min(e.clientY - dragStart.y, imageOffsetY + imageDisplayHeight - displayCrop.height));
+      const newX = Math.max(imageOffsetX, Math.min(clientX - dragStart.x, imageOffsetX + imageDisplayWidth - displayCrop.width));
+      const newY = Math.max(imageOffsetY, Math.min(clientY - dragStart.y, imageOffsetY + imageDisplayHeight - displayCrop.height));
 
       const newCropData = convertToImageCoordinates(newX, newY, displayCrop.width, displayCrop.height);
       setCropData(newCropData);
     } else if (isResizing) {
       const newDisplayCrop = { ...displayCrop };
-      const deltaX = e.clientX - dragStart.x;
-      const deltaY = e.clientY - dragStart.y;
+      const deltaX = clientX - dragStart.x;
+      const deltaY = clientY - dragStart.y;
 
       const isHorizontal = cropMode === CropMode.horizontal;
 
@@ -248,24 +311,38 @@ export default function CustomCropper({ src, onCropChange, cropMode, onReady }: 
 
       const newCropData = convertToImageCoordinates(newDisplayCrop.x, newDisplayCrop.y, newDisplayCrop.width, newDisplayCrop.height);
       setCropData(newCropData);
-      setDragStart({ x: e.clientX, y: e.clientY });
+      setDragStart({ x: clientX, y: clientY });
     }
   }, [isDragging, isResizing, dragStart, resizeHandle, getDisplayCropData, convertToImageCoordinates, cropMode]);
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useCallback((e?: MouseEvent | TouchEvent) => {
+    e?.preventDefault();
     setIsDragging(false);
     setIsResizing(false);
     setResizeHandle('');
   }, []);
 
-  // Global mouse event listeners for smooth dragging outside component bounds
+  // Global mouse and touch event listeners for smooth interaction
   useEffect(() => {
     if (isDragging || isResizing) {
+      // Mouse events
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
+
+      // Touch events for mobile
+      document.addEventListener('touchmove', handleMouseMove, { passive: false });
+      document.addEventListener('touchend', handleMouseUp);
+      document.addEventListener('touchcancel', handleMouseUp);
+
       return () => {
+        // Clean up mouse events
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
+
+        // Clean up touch events
+        document.removeEventListener('touchmove', handleMouseMove);
+        document.removeEventListener('touchend', handleMouseUp);
+        document.removeEventListener('touchcancel', handleMouseUp);
       };
     }
   }, [isDragging, isResizing, handleMouseMove, handleMouseUp]);
@@ -275,9 +352,10 @@ export default function CustomCropper({ src, onCropChange, cropMode, onReady }: 
   return (
     <div
       ref={containerRef}
-      className="relative w-full bg-image-neutral-50 dark:bg-image-neutral-800 overflow-hidden select-none border border-image-neutral-200 dark:border-image-neutral-700 rounded-lg shadow-sm flex items-center justify-center"
+      className="relative w-full bg-image-neutral-50 dark:bg-image-neutral-800 overflow-hidden select-none border border-image-neutral-200 dark:border-image-neutral-700 rounded-lg shadow-sm flex items-center justify-center touch-none"
       style={{ height: '60vh' }}
       onMouseDown={handleMouseDown}
+      onTouchStart={handleMouseDown}
     >
       <img
         ref={imageRef}
@@ -289,7 +367,7 @@ export default function CustomCropper({ src, onCropChange, cropMode, onReady }: 
         draggable={false}
       />
 
-      {imageLoaded && (
+      {imageLoaded && showCropArea && (
         <>
           {/* Crop overlay - shows the area that will be removed */}
           <div
@@ -305,29 +383,29 @@ export default function CustomCropper({ src, onCropChange, cropMode, onReady }: 
               transition: isDragging || isResizing ? 'none' : 'transform 0.15s ease-out'
             }}
           >
-            {/* Resize handles - only show relevant handles based on crop mode */}
+            {/* Resize handles - larger on mobile */}
             {isHorizontal && (
               <>
                 <div
-                  className="resize-handle absolute bg-white border-2 border-image-accent-500 cursor-ns-resize hover:bg-image-accent-50 hover:scale-110 transition-all duration-150 shadow-md"
+                  className="resize-handle absolute bg-white border-2 border-image-accent-500 cursor-ns-resize hover:bg-image-accent-50 hover:scale-110 transition-all duration-150 shadow-md touch-manipulation"
                   data-handle="n"
                   style={{
                     left: '50%',
-                    top: '-6px',
-                    width: '12px',
-                    height: '12px',
+                    top: '-8px',
+                    width: '16px',
+                    height: '16px',
                     borderRadius: '2px',
                     transform: `translateX(-50%) scale(${1 / cropTransform.scaleX}, ${1 / cropTransform.scaleY})`
                   }}
                 />
                 <div
-                  className="resize-handle absolute bg-white border-2 border-image-accent-500 cursor-ns-resize hover:bg-image-accent-50 hover:scale-110 transition-all duration-150 shadow-md"
+                  className="resize-handle absolute bg-white border-2 border-image-accent-500 cursor-ns-resize hover:bg-image-accent-50 hover:scale-110 transition-all duration-150 shadow-md touch-manipulation"
                   data-handle="s"
                   style={{
                     left: '50%',
-                    bottom: '-6px',
-                    width: '12px',
-                    height: '12px',
+                    bottom: '-8px',
+                    width: '16px',
+                    height: '16px',
                     borderRadius: '2px',
                     transform: `translateX(-50%) scale(${1 / cropTransform.scaleX}, ${1 / cropTransform.scaleY})`
                   }}
@@ -337,25 +415,25 @@ export default function CustomCropper({ src, onCropChange, cropMode, onReady }: 
             {!isHorizontal && (
               <>
                 <div
-                  className="resize-handle absolute bg-white border-2 border-image-accent-500 cursor-ew-resize hover:bg-image-accent-50 hover:scale-110 transition-all duration-150 shadow-md"
+                  className="resize-handle absolute bg-white border-2 border-image-accent-500 cursor-ew-resize hover:bg-image-accent-50 hover:scale-110 transition-all duration-150 shadow-md touch-manipulation"
                   data-handle="w"
                   style={{
-                    left: '-6px',
+                    left: '-8px',
                     top: '50%',
-                    width: '12px',
-                    height: '12px',
+                    width: '16px',
+                    height: '16px',
                     borderRadius: '2px',
                     transform: `translateY(-50%) scale(${1 / cropTransform.scaleX}, ${1 / cropTransform.scaleY})`
                   }}
                 />
                 <div
-                  className="resize-handle absolute bg-white border-2 border-image-accent-500 cursor-ew-resize hover:bg-image-accent-50 hover:scale-110 transition-all duration-150 shadow-md"
+                  className="resize-handle absolute bg-white border-2 border-image-accent-500 cursor-ew-resize hover:bg-image-accent-50 hover:scale-110 transition-all duration-150 shadow-md touch-manipulation"
                   data-handle="e"
                   style={{
-                    right: '-6px',
+                    right: '-8px',
                     top: '50%',
-                    width: '12px',
-                    height: '12px',
+                    width: '16px',
+                    height: '16px',
                     borderRadius: '2px',
                     transform: `translateY(-50%) scale(${1 / cropTransform.scaleX}, ${1 / cropTransform.scaleY})`
                   }}
