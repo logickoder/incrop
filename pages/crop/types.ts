@@ -19,3 +19,20 @@ export enum CropType {
   pixel = 'pixel',
   percentage = 'percentage'
 }
+
+// Progressive cropping types
+export interface CropStep {
+  id: string;
+  cropRegion: CropRegion;
+  cropMode: CropMode;
+  timestamp: number;
+  previewDataUrl?: string;
+}
+
+export interface ProgressiveCropState {
+  originalImage: string;
+  currentPreview: string;
+  cropHistory: CropStep[];
+  activeCropIndex: number;
+  isProcessing: boolean;
+}
