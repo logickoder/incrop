@@ -244,6 +244,7 @@ export default function InverseCropper({ file, preview }: CropImage) {
           cropMode={currentCropMode}
           onCropChange={(cropData) => setCurrentCropData(cropData)}
           onReady={(cropData) => setCurrentCropData(cropData)}
+          showCropArea={!showOriginal}
         />
 
         {/* Background tint for better button visibility */}

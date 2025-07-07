@@ -5,6 +5,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CropMode, CropRegion } from './types';
+import ResizeHandle from './ResizeHandle';
 
 interface CustomCropperProps {
   src: string;
@@ -14,13 +15,15 @@ interface CustomCropperProps {
   showCropArea?: boolean;
 }
 
-export default function CustomCropper({
-                                        src,
-                                        onCropChange,
-                                        cropMode,
-                                        onReady,
-                                        showCropArea = true
-                                      }: CustomCropperProps) {
+export default function CustomCropper(
+  {
+    src,
+    onCropChange,
+    cropMode,
+    onReady,
+    showCropArea = true
+  }: CustomCropperProps
+) {
   // DOM references
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -383,60 +386,32 @@ export default function CustomCropper({
               transition: isDragging || isResizing ? 'none' : 'transform 0.15s ease-out'
             }}
           >
-            {/* Resize handles - larger on mobile */}
+            {/* Resize handles */}
             {isHorizontal && (
               <>
-                <div
-                  className="resize-handle absolute bg-white border-2 border-image-accent-500 cursor-ns-resize hover:bg-image-accent-50 hover:scale-110 transition-all duration-150 shadow-md touch-manipulation"
-                  data-handle="n"
-                  style={{
-                    left: '50%',
-                    top: '-8px',
-                    width: '16px',
-                    height: '16px',
-                    borderRadius: '2px',
-                    transform: `translateX(-50%) scale(${1 / cropTransform.scaleX}, ${1 / cropTransform.scaleY})`
-                  }}
+                <ResizeHandle
+                  direction="n"
+                  onMouseDown={handleMouseDown}
+                  cropTransform={cropTransform}
                 />
-                <div
-                  className="resize-handle absolute bg-white border-2 border-image-accent-500 cursor-ns-resize hover:bg-image-accent-50 hover:scale-110 transition-all duration-150 shadow-md touch-manipulation"
-                  data-handle="s"
-                  style={{
-                    left: '50%',
-                    bottom: '-8px',
-                    width: '16px',
-                    height: '16px',
-                    borderRadius: '2px',
-                    transform: `translateX(-50%) scale(${1 / cropTransform.scaleX}, ${1 / cropTransform.scaleY})`
-                  }}
+                <ResizeHandle
+                  direction="s"
+                  onMouseDown={handleMouseDown}
+                  cropTransform={cropTransform}
                 />
               </>
             )}
             {!isHorizontal && (
               <>
-                <div
-                  className="resize-handle absolute bg-white border-2 border-image-accent-500 cursor-ew-resize hover:bg-image-accent-50 hover:scale-110 transition-all duration-150 shadow-md touch-manipulation"
-                  data-handle="w"
-                  style={{
-                    left: '-8px',
-                    top: '50%',
-                    width: '16px',
-                    height: '16px',
-                    borderRadius: '2px',
-                    transform: `translateY(-50%) scale(${1 / cropTransform.scaleX}, ${1 / cropTransform.scaleY})`
-                  }}
+                <ResizeHandle
+                  direction="w"
+                  onMouseDown={handleMouseDown}
+                  cropTransform={cropTransform}
                 />
-                <div
-                  className="resize-handle absolute bg-white border-2 border-image-accent-500 cursor-ew-resize hover:bg-image-accent-50 hover:scale-110 transition-all duration-150 shadow-md touch-manipulation"
-                  data-handle="e"
-                  style={{
-                    right: '-8px',
-                    top: '50%',
-                    width: '16px',
-                    height: '16px',
-                    borderRadius: '2px',
-                    transform: `translateY(-50%) scale(${1 / cropTransform.scaleX}, ${1 / cropTransform.scaleY})`
-                  }}
+                <ResizeHandle
+                  direction="e"
+                  onMouseDown={handleMouseDown}
+                  cropTransform={cropTransform}
                 />
               </>
             )}
