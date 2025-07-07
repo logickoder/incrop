@@ -275,7 +275,7 @@ export default function CustomCropper({ src, onCropChange, cropMode, onReady }: 
   return (
     <div
       ref={containerRef}
-      className="relative w-full bg-image-neutral-50 dark:bg-image-neutral-800 overflow-hidden select-none border border-image-neutral-200 dark:border-image-neutral-700 rounded-lg shadow-sm"
+      className="relative w-full bg-image-neutral-50 dark:bg-image-neutral-800 overflow-hidden select-none border border-image-neutral-200 dark:border-image-neutral-700 rounded-lg shadow-sm flex items-center justify-center"
       style={{ height: '60vh' }}
       onMouseDown={handleMouseDown}
     >
@@ -283,7 +283,7 @@ export default function CustomCropper({ src, onCropChange, cropMode, onReady }: 
         ref={imageRef}
         src={src}
         alt="Crop preview"
-        className="max-w-full max-h-full object-contain mx-auto"
+        className="max-w-full max-h-full object-contain"
         style={{ userSelect: 'none' }}
         onLoad={() => setImageLoaded(true)}
         draggable={false}
@@ -391,15 +391,25 @@ export default function CustomCropper({ src, onCropChange, cropMode, onReady }: 
             }}
           />
 
-          {/* Rule of thirds grid for composition guidance */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute inset-0 opacity-20">
-              <div className="absolute w-full h-px bg-image-primary-300 top-1/3"></div>
-              <div className="absolute w-full h-px bg-image-primary-300 top-2/3"></div>
-              <div className="absolute h-full w-px bg-image-primary-300 left-1/3"></div>
-              <div className="absolute h-full w-px bg-image-primary-300 left-2/3"></div>
+          {/* Rule of thirds grid, constrained to image boundaries for composition guidiance */}
+          {imageRef.current && (
+            <div
+              className="absolute pointer-events-none"
+              style={{
+                left: displayCrop.x - cropTransform.translateX + (imageRef.current.getBoundingClientRect().left - containerRef.current!.getBoundingClientRect().left),
+                top: displayCrop.y - cropTransform.translateY + (imageRef.current.getBoundingClientRect().top - containerRef.current!.getBoundingClientRect().top),
+                width: imageRef.current.clientWidth,
+                height: imageRef.current.clientHeight
+              }}
+            >
+              <div className="absolute inset-0 opacity-20">
+                <div className="absolute w-full h-px bg-image-primary-300 top-1/3"></div>
+                <div className="absolute w-full h-px bg-image-primary-300 top-2/3"></div>
+                <div className="absolute h-full w-px bg-image-primary-300 left-1/3"></div>
+                <div className="absolute h-full w-px bg-image-primary-300 left-2/3"></div>
+              </div>
             </div>
-          </div>
+          )}
         </>
       )}
     </div>
