@@ -29,6 +29,7 @@ const onRenderHtml: OnRenderHtmlAsync = async (pageContext): ReturnType<OnRender
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="${desc}" />
+        <meta name="google-site-verification" content="fbTISIQMxVJpMKZ77NscIpp1iJ8R-4WI_2XaCZdrkXw" />
         ${import.meta.env.PROD ? escapeInject`<link rel="manifest" href="/manifest.webmanifest">` : ''}
         <link rel="icon" href="/favicon.ico" sizes="48x48">
         <link rel="icon" href="/logo.svg" sizes="any" type="image/svg+xml">
