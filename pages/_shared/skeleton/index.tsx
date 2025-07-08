@@ -72,7 +72,7 @@ export default function Skeleton({ children }: { children: ReactNode }) {
       {/* Footer */}
       <footer className="footer footer-center p-4 bg-base-200 text-base-content">
         <div className="flex flex-col sm:flex-row items-center space-x-4">
-          <span>© 2025 <Link href="https://logickoder.github.io/" target="_blank">Jeffery Orazulike</Link>. All Rights Reserved.</span>
+          <span>© 2025 <Link href="https://logickoder.dev/" target="_blank">Jeffery Orazulike</Link>. All Rights Reserved.</span>
           <div className="flex space-x-2">
             <span className="text-xs bg-primary/10 px-2 py-1 rounded">Inverse Crop</span>
             <span className="text-xs bg-accent/10 px-2 py-1 rounded">Image Processing</span>
