@@ -12,8 +12,7 @@ center of your photos and bring edges together for a unique, standout effect. Cr
 - **Precision Control**: Pixel-perfect selection with real-time preview
 - **Multiple Formats**: Support for PNG, JPEG, and WebP
 - **User-Friendly**: Intuitive interface with drag-and-drop support
-
-[//]: # (- **Smart Processing**: Advanced edge blending for seamless results)
+- **Smart Processing**: Advanced edge blending for seamless results
 
 ## 🚀 Getting Started
 
@@ -53,7 +52,6 @@ pnpm dev
 - Tailwind CSS
 - DaisyUI
 - Canvas API
-- Cropper.js
 
 ## 📖 Usage
 
@@ -88,4 +86,4 @@ Project Link: [https://github.com/logickoder/incrop](https://github.com/logickod
 
 ---
 
-Made with ❤️ by Jeffery Orazulike
+Made with ❤️ by [Jeffery Orazulike](https://logickoder.dev)

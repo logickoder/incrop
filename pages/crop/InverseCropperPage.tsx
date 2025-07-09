@@ -229,7 +229,7 @@ export default function InverseCropper({ file, preview }: CropImage) {
                   Processing...
                 </>
               ) : (
-                `Download (${state.cropHistory.length})`
+                `Download`
               )}
             </button>
           </div>

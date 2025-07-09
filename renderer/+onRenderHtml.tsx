@@ -23,28 +23,12 @@ const onRenderHtml: OnRenderHtmlAsync = async (pageContext): ReturnType<OnRender
   const title = getPageTitle(pageContext);
   const desc = pageContext.data?.description ?? pageContext.config.description ?? 'Redefine your images, your way! InCrop is the ultimate tool for inverse cropping, letting you seamlessly remove the center of your photos and bring edges together for a unique, standout effect. Crop smarter, not harder!';
 
-  // SEO data
   const url = pageContext.urlOriginal || `https://incrop.logickoder.dev${pageContext.urlPathname}`;
   const imageUrl = 'https://incrop.logickoder.dev/logo.svg';
   const siteName = 'InCrop';
   const keywords = 'image editing, inverse cropping, photo editor, crop tool, image manipulation, online editor, photo processing';
   const author = 'logickoder';
   const type = 'website';
-
-  // Structured data for the application
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    'name': siteName,
-    'description': desc,
-    'url': url,
-    'applicationCategory': 'MultimediaApplication',
-    'operatingSystem': 'Web Browser',
-    'author': {
-      '@type': 'Organization',
-      'name': author
-    }
-  };
 
   const documentHtml = escapeInject`<!DOCTYPE html>
     <html lang="en">
@@ -99,7 +83,21 @@ const onRenderHtml: OnRenderHtmlAsync = async (pageContext): ReturnType<OnRender
         
         <!-- Structured Data -->
         <script type="application/ld+json">
-          ${dangerouslySkipEscape(JSON.stringify(structuredData))}
+          ${dangerouslySkipEscape(JSON.stringify(
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      'name': siteName,
+      'description': desc,
+      'url': url,
+      'applicationCategory': 'MultimediaApplication',
+      'operatingSystem': 'Web Browser',
+      'author': {
+        '@type': 'Organization',
+        'name': author
+      }
+    }
+  ))}
         </script>
       </head>
       <body>
