@@ -8,11 +8,13 @@ import {
   useState
 } from 'react';
 import { Clipboard, FileImage, ImagePlus, LucideProps, Upload } from 'lucide-react';
-import { toast } from 'react-toastify';
 import { navigate } from 'vike/client/router';
 import { CropImage } from './types';
+import { useToast } from '../../renderer/toast';
 
 export default function ImageUploadPage() {
+  const toast = useToast();
+
   const [selectedImage, setSelectedImage] = useState<CropImage>();
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -78,7 +80,7 @@ export default function ImageUploadPage() {
       };
       reader.readAsDataURL(file);
     } else {
-      toast('Please upload a valid image (JPEG, PNG, or WebP)', { type: 'error' });
+      toast.error('Please upload a valid image (JPEG, PNG, or WebP)');
     }
   };
 

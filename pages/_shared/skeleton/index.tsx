@@ -1,5 +1,5 @@
 import { ReactNode, useEffect } from 'react';
-import { Info, Moon, Sun } from 'lucide-react';
+import { Info, Moon, Sun, MessageCircle } from 'lucide-react';
 import useSkeletonStore from './store';
 import { AppTheme } from './types';
 import Link from '../Link';
@@ -39,6 +39,10 @@ export default function Skeleton({ children }: { children: ReactNode }) {
 
             <Link href="/about/" className="btn btn-ghost btn-circle">
               <Info className={iconClass} />
+            </Link>
+
+            <Link href="/feedback/" className="btn btn-ghost btn-circle" aria-label="Give Feedback">
+              <MessageCircle className={iconClass} />
             </Link>
 
             <Link

@@ -1,12 +1,14 @@
 import { useCallback, useState } from 'react';
 import { CropMode, CropRegion, CropStep, ProgressiveCropState } from './types';
-import { toast } from 'react-toastify';
 import { CropImage } from '../index/types';
 import { getAnalytics, logEvent } from 'firebase/analytics';
 import CustomCropper from './CustomCropper';
 import ProgressiveCropProcessor from './ProgressiveCropProcessor';
+import { useToast } from '../../renderer/toast';
 
-export default function InverseCropper({ file, preview }: CropImage) {
+export default function InverseCropperPage({ file, preview }: CropImage) {
+  const toast = useToast();
+
   const [state, setState] = useState<ProgressiveCropState>({
     originalImage: preview,
     currentPreview: preview,
@@ -27,7 +29,7 @@ export default function InverseCropper({ file, preview }: CropImage) {
    */
   const addCropStep = useCallback(async () => {
     if (!currentCropData) {
-      toast('Please select a crop area first', { type: 'error' });
+      toast.error('Please select a crop area first');
       return;
     }
 
@@ -62,7 +64,7 @@ export default function InverseCropper({ file, preview }: CropImage) {
       // Reset cropper by incrementing key
       setCropperKey(prev => prev + 1);
 
-      toast('Crop added successfully! Add another or download when ready.', { type: 'success' });
+      toast.success('Crop added successfully! Add another or download when ready.');
 
       const analytics = getAnalytics();
       logEvent(analytics, 'add_crop_step', {
@@ -72,10 +74,10 @@ export default function InverseCropper({ file, preview }: CropImage) {
       });
     } catch (error) {
       console.error('Failed to add crop step', error);
-      toast('An error occurred when processing the crop', { type: 'error' });
+      toast.error('An error occurred when processing the crop');
       setState(prev => ({ ...prev, isProcessing: false }));
     }
-  }, [currentCropData, currentCropMode, state.currentPreview, state.cropHistory.length, file.name, featherRadius]);
+  }, [currentCropData, toast, currentCropMode, state.currentPreview, state.cropHistory.length, file.name, featherRadius]);
 
   /**
    * Undo to a specific crop step
@@ -102,13 +104,13 @@ export default function InverseCropper({ file, preview }: CropImage) {
       // Reset cropper
       setCropperKey(prev => prev + 1);
 
-      toast(`Undone to ${stepIndex === -1 ? 'original' : `step ${stepIndex + 1}`}`, { type: 'info' });
+      toast.info(`Undone to ${stepIndex === -1 ? 'original' : `step ${stepIndex + 1}`}`);
     } catch (error) {
       console.error('Failed to undo', error);
-      toast('An error occurred during undo', { type: 'error' });
+      toast.error('An error occurred during undo');
       setState(prev => ({ ...prev, isProcessing: false }));
     }
-  }, [state.cropHistory, state.originalImage, featherRadius]);
+  }, [state.cropHistory, state.originalImage, featherRadius, toast]);
 
   /**
    * Download the final processed image
@@ -130,7 +132,7 @@ export default function InverseCropper({ file, preview }: CropImage) {
       link.download = `incrop-${file.name}`;
       link.click();
 
-      toast('Image downloaded successfully!', { type: 'success' });
+      toast.success('Image downloaded successfully!');
 
       const analytics = getAnalytics();
       logEvent(analytics, 'download_progressive_crop', {
@@ -140,11 +142,11 @@ export default function InverseCropper({ file, preview }: CropImage) {
       });
     } catch (error) {
       console.error('Failed to download image', error);
-      toast('An error occurred when generating final image', { type: 'error' });
+      toast.error('An error occurred when generating final image');
     } finally {
       setState(prev => ({ ...prev, isProcessing: false }));
     }
-  }, [state.originalImage, state.cropHistory, file.name, file.type, featherRadius]);
+  }, [state.originalImage, state.cropHistory, featherRadius, file.name, file.type, toast]);
 
   /**
    * Reset all crops and start over
@@ -157,8 +159,8 @@ export default function InverseCropper({ file, preview }: CropImage) {
       activeCropIndex: -1
     }));
     setCropperKey(prev => prev + 1);
-    toast('All crops cleared', { type: 'info' });
-  }, []);
+    toast.info('All crops cleared');
+  }, [toast]);
 
   return (
     <div className="flex flex-col">
